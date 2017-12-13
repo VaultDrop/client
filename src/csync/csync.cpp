@@ -209,7 +209,6 @@ static int _csync_treewalk_visitor(csync_file_stat_t *cur, CSYNC * ctx) {
     }
 
     csync_s::FileMap::const_iterator other_file_it = other_tree->find(cur->path);
-
     if (other_file_it == other_tree->cend()) {
         /* Check the renamed path as well. */
         QByteArray renamed_path = csync_rename_adjust_parent_path(ctx, cur->path);

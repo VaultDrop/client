@@ -348,6 +348,17 @@ void PropagateDownloadFile::start()
     qCDebug(lcPropagateDownload) << _item->_file << propagator()->_activeJobList.count();
     _stopwatch.start();
 
+    // For placeholder files just create the file and be done
+    if (_item->_type == ItemTypePlaceholder) {
+        auto fn = propagator()->getFilePath(_item->_file).append(".owncloud");
+        QFile file(fn);
+        file.open(QFile::ReadWrite);
+        file.write("stub");
+        file.close();
+        updateMetadata(false);
+        return;
+    }
+
     if (_deleteExisting) {
         deleteExistingFolder();
 

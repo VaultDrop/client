@@ -382,6 +382,17 @@ PropagateItemJob *OwncloudPropagator::createJob(const SyncFileItemPtr &item)
     case CSYNC_INSTRUCTION_SYNC:
     case CSYNC_INSTRUCTION_CONFLICT:
         if (item->_direction != SyncFileItem::Up) {
+            // Only do this if we don't actually want to download
+            if (item->_type == ItemTypePlaceholderDownload) {
+                // ### This is not the right location for this?
+                QFile::remove(getFilePath(item->_file) + ".owncloud");
+                item->_type = ItemTypeFile;
+            } else if (account()->usePlaceholders()
+                && item->_instruction == CSYNC_INSTRUCTION_NEW) {
+                // ### really do this here and not during update/reconcile/merge?
+                item->_type = ItemTypePlaceholder;
+            }
+
             auto job = new PropagateDownloadFile(this, item);
             job->setDeleteExistingFolder(deleteExisting);
             return job;
@@ -400,6 +411,7 @@ PropagateItemJob *OwncloudPropagator::createJob(const SyncFileItemPtr &item)
         if (item->_direction == SyncFileItem::Up) {
             return new PropagateRemoteMove(this, item);
         } else {
+            qDebug() << item->_file << item->_type;
             return new PropagateLocalRename(this, item);
         }
     case CSYNC_INSTRUCTION_IGNORE:
