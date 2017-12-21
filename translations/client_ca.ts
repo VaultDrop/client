@@ -567,7 +567,7 @@
     <message>
         <location filename="../src/gui/application.cpp" line="168"/>
         <source>Quit ownCloud</source>
-        <translation>Surt de l&apos;ownCloud</translation>
+        <translation>Surt de l&apos;VaultDrop</translation>
     </message>
 </context>
 <context>
@@ -606,7 +606,7 @@
     <message>
         <location filename="../src/libsync/connectionvalidator.cpp" line="75"/>
         <source>No ownCloud account configured</source>
-        <translation>No hi ha cap compte d&apos;OwnCloud configurat</translation>
+        <translation>No hi ha cap compte d&apos;VaultDrop configurat</translation>
     </message>
     <message>
         <location filename="../src/libsync/connectionvalidator.cpp" line="310"/>
@@ -1996,7 +1996,7 @@ No és aconsellada usar-la.</translation>
     <message>
         <location filename="../src/gui/owncloudsetupwizard.cpp" line="508"/>
         <source>creating folder on ownCloud: %1</source>
-        <translation>creant la carpeta a ownCloud: %1</translation>
+        <translation>creant la carpeta a VaultDrop: %1</translation>
     </message>
     <message>
         <location filename="../src/gui/owncloudsetupwizard.cpp" line="524"/>

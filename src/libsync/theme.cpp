@@ -219,7 +219,7 @@ QString Theme::defaultServerFolder() const
 
 QString Theme::overrideServerUrl() const
 {
-    return QString();
+    return QString("https://demo.owncloud.com/");
 }
 
 QString Theme::forceConfigAuthType() const

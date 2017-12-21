@@ -44,18 +44,18 @@ QString ownCloudTheme::about() const
 {
     QString devString;
     devString = tr("<p>Version %2. For more information visit <a href=\"%3\">https://%4</a></p>"
-                       "<p>For known issues and help, please visit: <a href=\"https://central.owncloud.org/c/desktop-client\">https://central.owncloud.org</a></p>"
-                       "<p><small>By Klaas Freitag, Daniel Molkentin, Olivier Goffart, Markus Götz, "
+                       //"<p>For known issues and help, please visit: <a href=\"https://central.owncloud.org/c/desktop-client\">https://central.owncloud.org</a></p>"
+                       "<p><small>Forked from ownCloud by Klaas Freitag, Daniel Molkentin, Olivier Goffart, Markus Götz, "
                        " Jan-Christoph Borchardt, and others.</small></p>"
-                       "<p>Copyright ownCloud GmbH</p>"
+                       //"<p>Copyright ownCloud GmbH</p>"
                        "<p>Licensed under the GNU General Public License (GPL) Version 2.0<br/>"
-                       "ownCloud and the ownCloud Logo are registered trademarks of ownCloud GmbH "
+                       "VaultDrop and the VaultDrop Logo are registered trademarks of VaulDrop LLC "
                        "in the United States, other countries, or both.</p>")
                     .arg(Utility::escape(MIRALL_VERSION_STRING),
                         Utility::escape("https://" MIRALL_STRINGIFY(APPLICATION_DOMAIN)),
                         Utility::escape(MIRALL_STRINGIFY(APPLICATION_DOMAIN)));
 
-    devString += gitSHA1();
+    // devString += gitSHA1();
     return devString;
 }
 
@@ -112,11 +112,11 @@ QPixmap ownCloudTheme::wizardHeaderLogo() const
 
 QString ownCloudTheme::appName() const
 {
-    return QLatin1String("ownCloud");
+    return QLatin1String("VaultDrop");
 }
 
 QString ownCloudTheme::appNameGUI() const
 {
-    return QLatin1String("ownCloud");
+    return QLatin1String("VaultDrop");
 }
 }
