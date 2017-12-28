@@ -61,7 +61,12 @@ QString Account::davPath() const
 {
     if (capabilities().chunkingNg()) {
         // The chunking-ng means the server prefer to use the new webdav URL
+#define VAULTDROP_PATHS
+#ifdef VAULTDROP_PATHS
+        return QLatin1String("/home/webdav/");
+#else
         return QLatin1String("/remote.php/dav/files/") + davUser() + QLatin1Char('/');
+#endif
     }
 
     // make sure to have a trailing slash

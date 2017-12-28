@@ -219,7 +219,7 @@ QString Theme::defaultServerFolder() const
 
 QString Theme::overrideServerUrl() const
 {
-    return QString("https://demo.owncloud.com/");
+    return QString("https://yj-vaultdrop.ngrok.io/");
 }
 
 QString Theme::forceConfigAuthType() const
@@ -317,7 +317,7 @@ QString Theme::about() const
              .arg("http://" MIRALL_STRINGIFY(APPLICATION_DOMAIN))
              .arg(MIRALL_STRINGIFY(APPLICATION_DOMAIN));
 
-    re += tr("<p>Copyright ownCloud GmbH</p>");
+    re += tr("<p>Copyright %1 GmbH</p>");
     re += tr("<p>Distributed by %1 and licensed under the GNU General Public License (GPL) Version 2.0.<br/>"
              "%2 and the %2 logo are registered trademarks of %1 in the "
              "United States, other countries, or both.</p>")
@@ -449,7 +449,7 @@ bool Theme::wizardSelectiveSyncDefaultNothing() const
 
 QString Theme::webDavPath() const
 {
-    return QLatin1String("remote.php/webdav/");
+    return QLatin1String("/home/webdav/");
 }
 
 QString Theme::webDavPathNonShib() const

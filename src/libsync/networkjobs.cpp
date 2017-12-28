@@ -388,10 +388,16 @@ bool LsColJob::finished()
 }
 
 /*********************************************************************************************/
+#define BYPASS_SERVER_CHECK_FOR_VAULTDROP
 
 namespace {
+#ifdef BYPASS_SERVER_CHECK_FOR_VAULTDROP
+    const char statusphpC[] = "";
+    const char owncloudDirC[] = "";
+#else
     const char statusphpC[] = "status.php";
     const char owncloudDirC[] = "owncloud/";
+#endif
 }
 
 CheckServerJob::CheckServerJob(AccountPtr account, QObject *parent)
@@ -410,6 +416,7 @@ void CheckServerJob::start()
     sendRequest("GET", Utility::concatUrlPath(_serverUrl, path()));
     connect(reply(), &QNetworkReply::metaDataChanged, this, &CheckServerJob::metaDataChangedSlot);
     connect(reply(), &QNetworkReply::encrypted, this, &CheckServerJob::encryptedSlot);
+
     AbstractNetworkJob::start();
 }
 
@@ -492,6 +499,20 @@ bool CheckServerJob::finished()
 
     mergeSslConfigurationForSslButton(reply()->sslConfiguration(), account());
 
+#ifdef BYPASS_SERVER_CHECK_FOR_VAULTDROP
+    QByteArray body = reply()->peek(4 * 1024);
+    int httpStatus = reply()->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+    if (body.isEmpty() || httpStatus != 200) {
+        qCWarning(lcCheckServerJob) << "error: status.php replied " << httpStatus << body;
+        emit instanceNotFound(reply());
+        return true;
+    } else {
+        QJsonParseError error;
+        auto status = QJsonDocument::fromJson("{\"installed\":\"true\",\"maintenance\":\"false\",\"needsDbUpgrade\":\"false\",\"version\":\"\",\"versionstring\":\"\",\"edition\":\"Enterprise\",\"productname\":\"VaultDrop\"}", &error);
+        emit instanceFound(_serverUrl, status.object());
+        return true;
+    }
+#else
     // The server installs to /owncloud. Let's try that if the file wasn't found
     // at the original location
     if ((reply()->error() == QNetworkReply::ContentNotFoundError) && (!_subdirFallback)) {
@@ -524,6 +545,7 @@ bool CheckServerJob::finished()
         }
     }
     return true;
+#endif
 }
 
 /*********************************************************************************************/
@@ -847,6 +869,8 @@ DetermineAuthTypeJob::DetermineAuthTypeJob(AccountPtr account, QObject *parent)
 
 void DetermineAuthTypeJob::start()
 {
+    emit authType(OAuth);
+/* YXJ
     qCInfo(lcDetermineAuthTypeJob) << "Determining auth type for" << _account->davUrl();
 
     QNetworkRequest req;
@@ -890,6 +914,7 @@ void DetermineAuthTypeJob::start()
         _propfindDone = true;
         checkBothDone();
     });
+	*/
 }
 
 void DetermineAuthTypeJob::checkBothDone()

@@ -25,6 +25,9 @@
 
 namespace OCC {
 
+#define VAULT_DROP_OAUTH
+
+
 Q_LOGGING_CATEGORY(lcOauth, "sync.credentials.oauth", QtInfoMsg)
 
 OAuth::~OAuth()
@@ -78,7 +81,24 @@ void OAuth::start()
 
                 QString code = rx.cap(1); // The 'code' is the first capture of the regexp
 
+
+#ifdef VAULT_DROP_OAUTH
+
+                /* Submit an HTTP form POST to https://my.vaultdrop.com/login/code with parameters:
+                redirect_uri=http://127.0.0.1:<port>
+                client_id=<same client id>
+                code=VaultDrop%20Client%20For%20Windows
+                grant_type=authorization_code
+
+                Parse fields from the response - refresh_token, access_token, token_type.
+                Note that I'm using token_type="authtkt" not token_type="Bearer".  I'd like to reserve "Bearer" for if we upgrade to a more modern auth token format.
+                */
+
+
+                QUrl requestToken = Utility::concatUrlPath(_account->url().toString(), QLatin1String("/login/code"));
+#else
                 QUrl requestToken = Utility::concatUrlPath(_account->url().toString(), QLatin1String("/index.php/apps/oauth2/api/v1/token"));
+#endif
                 QNetworkRequest req;
                 req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
 
@@ -88,8 +108,8 @@ void OAuth::start()
 
                 auto requestBody = new QBuffer;
                 QUrlQuery arguments(QString(
-                    "grant_type=authorization_code&code=%1&redirect_uri=http://localhost:%2")
-                                        .arg(code, QString::number(_server.serverPort())));
+                    "grant_type=authorization_code&code=%1&redirect_uri=http://127.0.0.1:%2&client_id=%3")
+                                        .arg(code, QString::number(_server.serverPort()), Theme::instance()->oauthClientId()));
                 requestBody->setData(arguments.query(QUrl::FullyEncoded).toLatin1());
 
                 auto job = _account->sendRequest("POST", requestToken, req, requestBody);
@@ -105,7 +125,13 @@ void OAuth::start()
 
                     if (reply->error() != QNetworkReply::NoError || jsonParseError.error != QJsonParseError::NoError
                         || json.isEmpty() || refreshToken.isEmpty() || accessToken.isEmpty()
-                        || json["token_type"].toString() != QLatin1String("Bearer")) {
+#ifdef VAULT_DROP_OAUTH
+                        || json["token_type"].toString() != QLatin1String("authtkt")
+#else
+                        || json["token_type"].toString() != QLatin1String("Bearer")
+
+#endif
+        ) {
                         QString errorReason;
                         QString errorFromJson = json["error"].toString();
                         if (!errorFromJson.isEmpty()) {
@@ -159,10 +185,17 @@ QUrl OAuth::authorisationLink() const
     QUrlQuery query;
     query.setQueryItems({ { QLatin1String("response_type"), QLatin1String("code") },
         { QLatin1String("client_id"), Theme::instance()->oauthClientId() },
-        { QLatin1String("redirect_uri"), QLatin1String("http://localhost:") + QString::number(_server.serverPort()) } });
+        { QLatin1String("redirect_uri"), QLatin1String("http://127.0.0.1:") + QString::number(_server.serverPort()) } });
     if (!_expectedUser.isNull())
         query.addQueryItem("user", _expectedUser);
+
+
+#ifdef VAULT_DROP_OAUTH
+    // eg: https://my.vaultdrop.com/login/privateid?redirect_uri=http://127.0.0.1:<port>&client_id=VaultDrop%20Client%20For%20Windows
+    QUrl url = Utility::concatUrlPath(_account->url(), QLatin1String("/login/privateid"), query);
+#else
     QUrl url = Utility::concatUrlPath(_account->url(), QLatin1String("/index.php/apps/oauth2/authorize"), query);
+#endif
     return url;
 }
 

@@ -45,9 +45,8 @@ QString ownCloudTheme::about() const
     QString devString;
     devString = tr("<p>Version %2. For more information visit <a href=\"%3\">https://%4</a></p>"
                        //"<p>For known issues and help, please visit: <a href=\"https://central.owncloud.org/c/desktop-client\">https://central.owncloud.org</a></p>"
-                       "<p><small>Forked from ownCloud by Klaas Freitag, Daniel Molkentin, Olivier Goffart, Markus Götz, "
-                       " Jan-Christoph Borchardt, and others.</small></p>"
-                       //"<p>Copyright ownCloud GmbH</p>"
+                       "<p><small>Forked from ownCloud by Klaas Freitag, Daniel Molkentin, Olivier Goffart, Markus Götz, Jan-Christoph Borchardt, and others.</small></p>"
+                       "<p>Copyright VaultDrop LLC, ownCloud GmbH and others.</p>"
                        "<p>Licensed under the GNU General Public License (GPL) Version 2.0<br/>"
                        "VaultDrop and the VaultDrop Logo are registered trademarks of VaulDrop LLC "
                        "in the United States, other countries, or both.</p>")

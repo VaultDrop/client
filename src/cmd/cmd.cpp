@@ -134,9 +134,42 @@ class HttpCredentialsText : public HttpCredentials
 public:
     HttpCredentialsText(const QString &user, const QString &password)
         : HttpCredentials(user, password)
-        , // FIXME: not working with client certs yet (qknight)
-        _sslTrusted(false)
+        //, // FIXME: not working with client certs yet (qknight)
+        //_sslTrusted(false)
     {
+    }
+
+    void askFromUser() Q_DECL_OVERRIDE
+    {
+        _password = ::queryPassword(user());
+        _ready = true;
+        persist();
+        emit asked();
+    }
+
+    void setSSLTrusted(bool isTrusted)
+    {
+        _sslTrusted = isTrusted;
+    }
+
+    bool sslIsTrusted() Q_DECL_OVERRIDE
+    {
+        return _sslTrusted;
+    }
+
+private:
+    bool _sslTrusted;
+};
+
+class HttpCredentialsToken : public HttpCredentials
+{
+public:
+    HttpCredentialsToken(const QString &user, const QString &token)
+        : HttpCredentials(user, QString::fromUtf8(""))
+        //, // FIXME: not working with client certs yet (qknight)
+        //_sslTrusted(false)
+    {
+        this->_refreshToken = token;
     }
 
     void askFromUser() Q_DECL_OVERRIDE
@@ -372,6 +405,10 @@ int main(int argc, char **argv)
     QString user = url.userName();
     QString password = url.password();
 
+
+    user = QString::fromUtf8("yonas.jongkind@gmail.com");
+    password = QString::fromUtf8("96820846d1f0c79a2761e16817d10c43fb36ab8f7c50bd606b601adfa4a03c58");
+
     if (!options.user.isEmpty()) {
         user = options.user;
     }
@@ -401,6 +438,7 @@ int main(int argc, char **argv)
         }
     }
 
+
     // take the unmodified url to pass to csync_create()
     QByteArray remUrl = options.target_url.toUtf8();
 
@@ -422,17 +460,36 @@ int main(int argc, char **argv)
 
     SimpleSslErrorHandler *sslErrorHandler = new SimpleSslErrorHandler;
 
-    HttpCredentialsText *cred = new HttpCredentialsText(user, password);
-
+    HttpCredentialsToken *cred = new HttpCredentialsToken(user, password);
     if (options.trustSSL) {
         cred->setSSLTrusted(true);
     }
+    //cred->fetchFromKeychain();
+
     account->setUrl(url);
     account->setCredentials(cred);
     account->setSslErrorHandler(sslErrorHandler);
 
     //obtain capabilities using event loop
     QEventLoop loop;
+
+#define VAULTDROP_CAPABILITIES
+#ifdef VAULTDROP_CAPABILITIES
+
+
+    QJsonParseError error;
+    auto body = "{\"ocs\":{\"meta\":{\"status\":\"ok\",\"statuscode\":100,\"message\":\"OK\",\"totalitems\":\"\",\"itemsperpage\":\"\"},\"data\":{\"version\":{\"major\":10,\"minor\":0,\"micro\":3,\"string\":\"10.0.3\",\"edition\":\"Enterprise\"},\"capabilities\":{\"core\":{\"pollinterval\":60,\"webdav-root\":\"home/webdav/\",\"status\":{\"installed\":\"true\",\"maintenance\":\"false\",\"needsDbUpgrade\":\"false\",\"version\":\"10.0.3.3\",\"versionstring\":\"10.0.3\",\"edition\":\"Enterprise\",\"productname\":\"ownCloud\"}},\"dav\":{\"chunking\":\"1.0\"},\"files_sharing\":{\"api_enabled\":true,\"public\":{\"enabled\":true,\"password\":{\"enforced\":false},\"expire_date\":{\"enabled\":false},\"send_mail\":false,\"upload\":true,\"multiple\":true,\"supports_upload_only\":true},\"user\":{\"send_mail\":false},\"resharing\":true,\"group_sharing\":true,\"default_permissions\":31,\"federation\":{\"outgoing\":true,\"incoming\":true}},\"checksums\":{\"supportedTypes\":[\"SHA1\"],\"preferredUploadType\":\"SHA1\"},\"files\":{\"bigfilechunking\":true,\"blacklisted_files\":[\".htaccess\"],\"undelete\":true,\"versioning\":true},\"notifications\":{\"ocs-endpoints\":[\"list\",\"get\",\"delete\"]}}}}}";
+    auto status = QJsonDocument::fromJson(body, &error);
+    // empty or invalid response
+    if (error.error != QJsonParseError::NoError || status.isNull()) {
+         std::cout << "status.php from server is not valid JSON!" << body << error.errorString().data();
+         return -1;
+    }
+    auto caps = status.object().value("ocs").toObject().value("data").toObject().value("capabilities").toObject();
+
+    account->setCapabilities(caps.toVariantMap());
+
+#else
 
     JsonApiJob *job = new JsonApiJob(account, QLatin1String("ocs/v1.php/cloud/capabilities"));
     job->setTimeout(timeoutToUseMsec);
@@ -450,7 +507,7 @@ int main(int argc, char **argv)
         std::cout<<"Error connecting to server\n";
         return EXIT_FAILURE;
     }
-
+#endif
     // much lower age than the default since this utility is usually made to be run right after a change in the tests
     SyncEngine::minimumFileAgeForUpload = 0;
 

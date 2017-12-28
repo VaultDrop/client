@@ -247,12 +247,27 @@ void ConnectionValidator::slotAuthSuccess()
 
 void ConnectionValidator::checkServerCapabilities()
 {
+#define VAULTDROP_CAPABILITIES
+#ifdef VAULTDROP_CAPABILITIES
+
+
+    QJsonParseError error;
+    auto body = "{\"ocs\":{\"meta\":{\"status\":\"ok\",\"statuscode\":100,\"message\":\"OK\",\"totalitems\":\"\",\"itemsperpage\":\"\"},\"data\":{\"version\":{\"major\":10,\"minor\":0,\"micro\":3,\"string\":\"10.0.3\",\"edition\":\"Enterprise\"},\"capabilities\":{\"core\":{\"pollinterval\":60,\"webdav-root\":\"home/webdav/\",\"status\":{\"installed\":\"true\",\"maintenance\":\"false\",\"needsDbUpgrade\":\"false\",\"version\":\"10.0.3.3\",\"versionstring\":\"10.0.3\",\"edition\":\"Enterprise\",\"productname\":\"ownCloud\"}},\"dav\":{\"chunking\":\"1.0\"},\"files_sharing\":{\"api_enabled\":true,\"public\":{\"enabled\":true,\"password\":{\"enforced\":false},\"expire_date\":{\"enabled\":false},\"send_mail\":false,\"upload\":true,\"multiple\":true,\"supports_upload_only\":true},\"user\":{\"send_mail\":false},\"resharing\":true,\"group_sharing\":true,\"default_permissions\":31,\"federation\":{\"outgoing\":true,\"incoming\":true}},\"checksums\":{\"supportedTypes\":[\"SHA1\"],\"preferredUploadType\":\"SHA1\"},\"files\":{\"bigfilechunking\":true,\"blacklisted_files\":[\".htaccess\"],\"undelete\":true,\"versioning\":true},\"notifications\":{\"ocs-endpoints\":[\"list\",\"get\",\"delete\"]}}}}}";
+    auto status = QJsonDocument::fromJson(body, &error);
+    // empty or invalid response
+    if (error.error != QJsonParseError::NoError || status.isNull()) {
+         qCInfo(lcConnectionValidator) << "status.php from server is not valid JSON!" << body << error.errorString().data();
+    }
+    auto caps = status.object().value("ocs").toObject().value("data").toObject().value("capabilities").toObject();
+    _account->setCapabilities(caps.toVariantMap());
+
+#else
     // The main flow now needs the capabilities
     JsonApiJob *job = new JsonApiJob(_account, QLatin1String("ocs/v1.php/cloud/capabilities"), this);
     job->setTimeout(timeoutToUseMsec);
     QObject::connect(job, &JsonApiJob::jsonReceived, this, &ConnectionValidator::slotCapabilitiesRecieved);
     job->start();
-
+#endif
     // And we'll retrieve the ocs config in parallel
     // note that 'this' might be destroyed before the job finishes, so intentionally not parented
     auto configJob = new JsonApiJob(_account, QLatin1String("ocs/v1.php/config"));
