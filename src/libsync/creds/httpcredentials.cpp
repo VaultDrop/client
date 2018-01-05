@@ -357,10 +357,14 @@ bool HttpCredentials::refreshAccessToken()
     QNetworkRequest req;
     req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
 
-    QString basicAuth = QString("%1:%2").arg(
-        Theme::instance()->oauthClientId(), Theme::instance()->oauthClientSecret());
+    auto clientId = Theme::instance()->oauthClientId();
+    auto clientSecret = Theme::instance()->oauthClientSecret();
+    QString basicAuth = QString("%1:%2").arg(clientId, basicAuth);
+#ifdef VAULT_DROP_OAUTH
+    req.setRawHeader("Authorization", "authtkt " + basicAuth.toUtf8().toBase64());
+#else
     req.setRawHeader("Authorization", "Basic " + basicAuth.toUtf8().toBase64());
-
+#endif
     auto requestBody = new QBuffer;
     QUrlQuery arguments(QString("grant_type=refresh_token&refresh_token=%1").arg(_refreshToken));
     requestBody->setData(arguments.query(QUrl::FullyEncoded).toLatin1());

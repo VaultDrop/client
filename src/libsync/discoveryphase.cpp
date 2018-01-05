@@ -434,8 +434,8 @@ void DiscoverySingleDirectoryJob::lsJobFinishedWithErrorSlot(QNetworkReply *r)
         errnoCode = get_errno_from_http_errcode(httpCode, httpReason);
     } else if (r->error() != QNetworkReply::NoError) {
         errnoCode = EIO;
-    } else if (!contentType.contains("application/xml; charset=utf-8")) {
-        msg = QLatin1String("Server error: PROPFIND reply is not XML formatted!");
+    } else if (!contentType.contains("application/xml"/* YXJ Ignore this for vault drop  - was: "application/xml; charset=utf-8"*/)) {
+        msg = QLatin1String("Server error: PROPFIND reply is not XML formatted - expected application/xml content type.!");
         errnoCode = ERRNO_WRONG_CONTENT;
     } else {
         // Default keep at EIO, see above

@@ -165,7 +165,7 @@ class HttpCredentialsToken : public HttpCredentials
 {
 public:
     HttpCredentialsToken(const QString &user, const QString &token)
-        : HttpCredentials(user, QString::fromUtf8(""))
+        : HttpCredentials(user, token)
         //, // FIXME: not working with client certs yet (qknight)
         //_sslTrusted(false)
     {
@@ -262,6 +262,9 @@ void parseOptions(const QStringList &app_args, CmdOptions *options)
         exit(1);
     }
     options->source_dir = fi.absoluteFilePath();
+    if (!options->source_dir.endsWith('/')) {
+        options->source_dir.append('/');
+    }
 
     QStringListIterator it(args);
     // skip file name;
@@ -407,7 +410,7 @@ int main(int argc, char **argv)
 
 
     user = QString::fromUtf8("yonas.jongkind@gmail.com");
-    password = QString::fromUtf8("96820846d1f0c79a2761e16817d10c43fb36ab8f7c50bd606b601adfa4a03c58");
+    password = QString::fromUtf8("1010217d35627bb2d5dd7cd16c6169ef09e31b56be85db5aa7f86136e692bbb43a56c48bb441efbba31474350926c92e8e5297816c81e479789294b420f2bf305a469bd42!");
 
     if (!options.user.isEmpty()) {
         user = options.user;
@@ -459,26 +462,32 @@ int main(int argc, char **argv)
     }
 
     SimpleSslErrorHandler *sslErrorHandler = new SimpleSslErrorHandler;
-
+#define VAULTDROP
+#ifdef VAULTDROP
     HttpCredentialsToken *cred = new HttpCredentialsToken(user, password);
+#else
+    HttpCredentialsText *cred = new HttpCredentialsText(user, password);
+#endif
     if (options.trustSSL) {
         cred->setSSLTrusted(true);
     }
-    //cred->fetchFromKeychain();
-
     account->setUrl(url);
     account->setCredentials(cred);
     account->setSslErrorHandler(sslErrorHandler);
 
+#ifdef VAULTDROP
     //obtain capabilities using event loop
-    QEventLoop loop;
+  //  QEventLoop loopn;
+//    cred->refreshAccessToken();
+   // loopn.exec();
+#endif
 
 #define VAULTDROP_CAPABILITIES
 #ifdef VAULTDROP_CAPABILITIES
 
 
     QJsonParseError error;
-    auto body = "{\"ocs\":{\"meta\":{\"status\":\"ok\",\"statuscode\":100,\"message\":\"OK\",\"totalitems\":\"\",\"itemsperpage\":\"\"},\"data\":{\"version\":{\"major\":10,\"minor\":0,\"micro\":3,\"string\":\"10.0.3\",\"edition\":\"Enterprise\"},\"capabilities\":{\"core\":{\"pollinterval\":60,\"webdav-root\":\"home/webdav/\",\"status\":{\"installed\":\"true\",\"maintenance\":\"false\",\"needsDbUpgrade\":\"false\",\"version\":\"10.0.3.3\",\"versionstring\":\"10.0.3\",\"edition\":\"Enterprise\",\"productname\":\"ownCloud\"}},\"dav\":{\"chunking\":\"1.0\"},\"files_sharing\":{\"api_enabled\":true,\"public\":{\"enabled\":true,\"password\":{\"enforced\":false},\"expire_date\":{\"enabled\":false},\"send_mail\":false,\"upload\":true,\"multiple\":true,\"supports_upload_only\":true},\"user\":{\"send_mail\":false},\"resharing\":true,\"group_sharing\":true,\"default_permissions\":31,\"federation\":{\"outgoing\":true,\"incoming\":true}},\"checksums\":{\"supportedTypes\":[\"SHA1\"],\"preferredUploadType\":\"SHA1\"},\"files\":{\"bigfilechunking\":true,\"blacklisted_files\":[\".htaccess\"],\"undelete\":true,\"versioning\":true},\"notifications\":{\"ocs-endpoints\":[\"list\",\"get\",\"delete\"]}}}}}";
+    auto body = "{\"ocs\":{\"meta\":{\"status\":\"ok\",\"statuscode\":100,\"message\":\"OK\",\"totalitems\":\"\",\"itemsperpage\":\"\"},\"data\":{\"version\":{\"major\":10,\"minor\":0,\"micro\":3,\"string\":\"10.0.3\",\"edition\":\"Enterprise\"},\"capabilities\":{\"core\":{\"pollinterval\":60,\"webdav-root\":\"home/webdav/\",\"status\":{\"installed\":\"true\",\"maintenance\":\"false\",\"needsDbUpgrade\":\"false\",\"version\":\"10.0.3.3\",\"versionstring\":\"10.0.3\",\"edition\":\"Enterprise\",\"productname\":\"ownCloud\"}},\"dav\":{\"chunking\":\"1.0\"},\"files_sharing\":{\"api_enabled\":true,\"public\":{\"enabled\":true,\"password\":{\"enforced\":false},\"expire_date\":{\"enabled\":false},\"send_mail\":false,\"upload\":true,\"multiple\":true,\"supports_upload_only\":true},\"user\":{\"send_mail\":false},\"resharing\":true,\"group_sharing\":true,\"default_permissions\":31,\"federation\":{\"outgoing\":true,\"incoming\":true}},\"checksums\":{\"supportedTypes\":[\"MD5\"],\"preferredUploadType\":\"MD5\"},\"files\":{\"bigfilechunking\":true,\"blacklisted_files\":[\".htaccess\"],\"undelete\":true,\"versioning\":true},\"notifications\":{\"ocs-endpoints\":[\"list\",\"get\",\"delete\"]}}}}}";
     auto status = QJsonDocument::fromJson(body, &error);
     // empty or invalid response
     if (error.error != QJsonParseError::NoError || status.isNull()) {
@@ -490,6 +499,8 @@ int main(int argc, char **argv)
     account->setCapabilities(caps.toVariantMap());
 
 #else
+    //obtain capabilities using event loop
+    QEventLoop loop;
 
     JsonApiJob *job = new JsonApiJob(account, QLatin1String("ocs/v1.php/cloud/capabilities"));
     job->setTimeout(timeoutToUseMsec);
