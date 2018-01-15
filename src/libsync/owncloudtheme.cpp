@@ -37,7 +37,7 @@ ownCloudTheme::ownCloudTheme()
 
 QString ownCloudTheme::configFileName() const
 {
-    return QLatin1String("owncloud.cfg");
+    return QLatin1String("vaultdrop.cfg");
 }
 
 QString ownCloudTheme::about() const
@@ -94,7 +94,7 @@ QString ownCloudTheme::helpUrl() const
 #ifndef TOKEN_AUTH_ONLY
 QColor ownCloudTheme::wizardHeaderBackgroundColor() const
 {
-    return QColor("#1d2d42");
+    return QColor("#40A2F1");
 }
 
 QColor ownCloudTheme::wizardHeaderTitleColor() const

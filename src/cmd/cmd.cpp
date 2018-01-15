@@ -487,7 +487,12 @@ int main(int argc, char **argv)
 
 
     QJsonParseError error;
-    auto body = "{\"ocs\":{\"meta\":{\"status\":\"ok\",\"statuscode\":100,\"message\":\"OK\",\"totalitems\":\"\",\"itemsperpage\":\"\"},\"data\":{\"version\":{\"major\":10,\"minor\":0,\"micro\":3,\"string\":\"10.0.3\",\"edition\":\"Enterprise\"},\"capabilities\":{\"core\":{\"pollinterval\":60,\"webdav-root\":\"home/webdav/\",\"status\":{\"installed\":\"true\",\"maintenance\":\"false\",\"needsDbUpgrade\":\"false\",\"version\":\"10.0.3.3\",\"versionstring\":\"10.0.3\",\"edition\":\"Enterprise\",\"productname\":\"ownCloud\"}},\"dav\":{\"chunking\":\"1.0\"},\"files_sharing\":{\"api_enabled\":true,\"public\":{\"enabled\":true,\"password\":{\"enforced\":false},\"expire_date\":{\"enabled\":false},\"send_mail\":false,\"upload\":true,\"multiple\":true,\"supports_upload_only\":true},\"user\":{\"send_mail\":false},\"resharing\":true,\"group_sharing\":true,\"default_permissions\":31,\"federation\":{\"outgoing\":true,\"incoming\":true}},\"checksums\":{\"supportedTypes\":[\"MD5\"],\"preferredUploadType\":\"MD5\"},\"files\":{\"bigfilechunking\":true,\"blacklisted_files\":[\".htaccess\"],\"undelete\":true,\"versioning\":true},\"notifications\":{\"ocs-endpoints\":[\"list\",\"get\",\"delete\"]}}}}}";
+    // Keep the following in cmd.cpp and
+    auto body = "{\"ocs\":"
+                "{\"meta\":"
+                "{\"status\":\"ok\",\"statuscode\":100,\"message\":\"OK\",\"totalitems\":\"\",\"itemsperpage\":\"\"},"
+                "\"data\":{\"version\":{\"major\":10,\"minor\":0,\"micro\":3,\"string\":\"10.0.3\",\"edition\":\"Enterprise\"},"
+                "\"capabilities\":{\"core\":{\"pollinterval\":60,\"webdav-root\":\"home/webdav/\",\"status\":{\"installed\":\"true\",\"maintenance\":\"false\",\"needsDbUpgrade\":\"false\",\"version\":\"10.0.3.3\",\"versionstring\":\"10.0.3\",\"edition\":\"Enterprise\",\"productname\":\"ownCloud\"}},\"dav\":{\"chunking\":\"0.0\"},\"files_sharing\":{\"api_enabled\":false,\"public\":{\"enabled\":false,\"password\":{\"enforced\":false},\"expire_date\":{\"enabled\":false},\"send_mail\":false,\"upload\":true,\"multiple\":true,\"supports_upload_only\":true},\"user\":{\"send_mail\":false},\"resharing\":false,\"group_sharing\":false,\"default_permissions\":31,\"federation\":{\"outgoing\":false,\"incoming\":false}},\"checksums\":{\"supportedTypes\":[\"MD5\"],\"preferredUploadType\":\"MD5\"},\"files\":{\"bigfilechunking\":false,\"blacklisted_files\":[\".htaccess\"],\"undelete\":true,\"versioning\":true},\"notifications\":{\"ocs-endpoints\":[\"list\",\"get\",\"delete\"]}}}}}";
     auto status = QJsonDocument::fromJson(body, &error);
     // empty or invalid response
     if (error.error != QJsonParseError::NoError || status.isNull()) {
