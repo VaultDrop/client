@@ -514,6 +514,9 @@ int SyncEngine::treewalkFile(csync_file_stat_t *file, csync_file_stat_t *other, 
     case CSYNC_STATUS_INDIVIDUAL_EXCLUDE_HIDDEN:
         item->_errorString = tr("File/Folder is ignored because it's hidden.");
         break;
+    case CSYNC_STATUS_INDIVIDUAL_EXCLUDE_TOO_LARGE:
+        item->_errorString = tr("File/Folder is ignored because it exceeds the max file size.");
+        break;
     case CSYNC_STATUS_INDIVIDUAL_TOO_DEEP:
         item->_errorString = tr("Folder hierarchy is too deep");
         break;

@@ -134,6 +134,17 @@ static int _csync_detect_update(CSYNC *ctx, std::unique_ptr<csync_file_stat_t> f
           qCDebug(lcUpdate, "file excluded because it is a hidden file: %s", fs->path.constData());
           excluded = CSYNC_FILE_EXCLUDE_HIDDEN;
       }
+#define VAULTDROP
+#define VAULTDROP_MAX_FILE_SIZE (20*(1024*1024))
+#ifdef VAULTDROP
+      if (fs->size > VAULTDROP_MAX_FILE_SIZE) {
+          qCDebug(lcUpdate, "file excluded because it is a above max file size: %s (max file size is (%d MB)", fs->path.constData(), VAULTDROP_MAX_FILE_SIZE/1024/1024);
+
+          excluded = CSYNC_FILE_EXCLUDE_TOO_LARGE;
+      }
+#endif
+
+
   } else {
       /* File is ignored because it's matched by a user- or system exclude pattern. */
       qCDebug(lcUpdate, "%s excluded  (%d)", fs->path.constData(), excluded);
@@ -380,6 +391,8 @@ out:
               fs->error_status = CSYNC_STATUS_INDIVIDUAL_TRAILING_SPACE; /* File ends with a trailing space. */
           } else if (excluded == CSYNC_FILE_EXCLUDE_LONG_FILENAME) {
               fs->error_status = CSYNC_STATUS_INDIVIDUAL_EXCLUDE_LONG_FILENAME; /* File name is too long. */
+          } else if (excluded == CSYNC_FILE_EXCLUDE_TOO_LARGE ) {
+              fs->error_status = CSYNC_STATUS_INDIVIDUAL_EXCLUDE_TOO_LARGE;
           } else if (excluded == CSYNC_FILE_EXCLUDE_HIDDEN ) {
               fs->error_status = CSYNC_STATUS_INDIVIDUAL_EXCLUDE_HIDDEN;
           } else if (excluded == CSYNC_FILE_EXCLUDE_STAT_FAILED) {
