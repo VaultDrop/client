@@ -63,8 +63,8 @@ protected:
         if (!req.attribute(HttpCredentials::DontAddCredentialsAttribute).toBool()) {
             if (_cred && !_cred->password().isEmpty()) {
                 if (_cred->isUsingOAuth()) {
-#define VAULT_DROP_OAUTH
-#ifdef VAULT_DROP_OAUTH
+#define VAULTDROP_OAUTH
+#ifdef VAULTDROP_OAUTH
                     req.setRawHeader("Authorization", "authtkt " + _cred->password().toUtf8());
 #else
                     req.setRawHeader("Authorization", "Bearer " + _cred->password().toUtf8());
@@ -349,7 +349,7 @@ bool HttpCredentials::refreshAccessToken()
 {
     if (_refreshToken.isEmpty())
         return false;
-#ifdef VAULT_DROP_OAUTH
+#ifdef VAULTDROP_OAUTH
     QUrl requestToken = Utility::concatUrlPath(_account->url(), QLatin1String("/login/authtkt"));
 #else
     QUrl requestToken = Utility::concatUrlPath(_account->url(), QLatin1String("/index.php/apps/oauth2/api/v1/token"));
@@ -360,7 +360,7 @@ bool HttpCredentials::refreshAccessToken()
     auto clientId = Theme::instance()->oauthClientId();
     auto clientSecret = Theme::instance()->oauthClientSecret();
     QString basicAuth = QString("%1:%2").arg(clientId, basicAuth);
-#ifdef VAULT_DROP_OAUTH
+#ifdef VAULTDROP_OAUTH
     req.setRawHeader("Authorization", "authtkt " + basicAuth.toUtf8().toBase64());
 #else
     req.setRawHeader("Authorization", "Basic " + basicAuth.toUtf8().toBase64());

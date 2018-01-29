@@ -388,7 +388,7 @@ bool LsColJob::finished()
 }
 
 /*********************************************************************************************/
-#define BYPASS_SERVER_CHECK_FOR_VAULTDROP
+//#define BYPASS_SERVER_CHECK_FOR_VAULTDROP
 
 namespace {
 #ifdef BYPASS_SERVER_CHECK_FOR_VAULTDROP

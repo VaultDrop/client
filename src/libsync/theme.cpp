@@ -209,7 +209,12 @@ bool Theme::singleSyncFolder() const
 
 bool Theme::multiAccount() const
 {
+#define OWN_CLOUD
+#ifdef OWN_CLOUD
+    return false;
+#else
     return true;
+#endif
 }
 
 QString Theme::defaultServerFolder() const
@@ -219,7 +224,8 @@ QString Theme::defaultServerFolder() const
 
 QString Theme::overrideServerUrl() const
 {
-    return QString("https://yj-vaultdrop.ngrok.io/");
+//    return QString("https://yj-vaultdrop.ngrok.io/");
+    return QString("https://staging.vaultdrop.com/");
 }
 
 QString Theme::forceConfigAuthType() const

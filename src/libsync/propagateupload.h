@@ -312,9 +312,14 @@ private:
     int _transferId = 0; /// transfer id (part of the url)
 
     quint64 chunkSize() const {
+#define VAULTDROP
+#ifdef VAULTDROP
+        return 100*1024*1020; // Larger than the vault drop max file size.
+#else
         // Old chunking does not use dynamic chunking algorithm, and does not adjusts the chunk size respectively,
         // thus this value should be used as the one classifing item to be chunked
         return propagator()->syncOptions()._initialChunkSize;
+#endif
     }
 
 public:

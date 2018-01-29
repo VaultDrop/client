@@ -25,7 +25,7 @@
 
 namespace OCC {
 
-#define VAULT_DROP_OAUTH
+#define VAULTDROP_OAUTH
 
 
 Q_LOGGING_CATEGORY(lcOauth, "sync.credentials.oauth", QtInfoMsg)
@@ -82,7 +82,7 @@ void OAuth::start()
                 QString code = rx.cap(1); // The 'code' is the first capture of the regexp
 
 
-#ifdef VAULT_DROP_OAUTH
+#ifdef VAULTDROP_OAUTH
 
                 /* Submit an HTTP form POST to https://my.vaultdrop.com/login/code with parameters:
                 redirect_uri=http://127.0.0.1:<port>
@@ -125,7 +125,7 @@ void OAuth::start()
 
                     if (reply->error() != QNetworkReply::NoError || jsonParseError.error != QJsonParseError::NoError
                         || json.isEmpty() || refreshToken.isEmpty() || accessToken.isEmpty()
-#ifdef VAULT_DROP_OAUTH
+#ifdef VAULTDROP_OAUTH
                         || json["token_type"].toString() != QLatin1String("authtkt")
 #else
                         || json["token_type"].toString() != QLatin1String("Bearer")
@@ -190,7 +190,7 @@ QUrl OAuth::authorisationLink() const
         query.addQueryItem("user", _expectedUser);
 
 
-#ifdef VAULT_DROP_OAUTH
+#ifdef VAULTDROP_OAUTH
     // eg: https://my.vaultdrop.com/login/privateid?redirect_uri=http://127.0.0.1:<port>&client_id=VaultDrop%20Client%20For%20Windows
     QUrl url = Utility::concatUrlPath(_account->url(), QLatin1String("/login/privateid"), query);
 #else
