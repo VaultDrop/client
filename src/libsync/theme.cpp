@@ -224,8 +224,8 @@ QString Theme::defaultServerFolder() const
 
 QString Theme::overrideServerUrl() const
 {
-    return QString("https://yj-vaultdrop.ngrok.io/");
-//    return QString("https://staging.valutdrop.com/");
+//    return QString("https://yj-vaultdrop.ngrok.io/");
+    return QString("https://staging.vaultdrop.com/");
 }
 
 QString Theme::forceConfigAuthType() const
