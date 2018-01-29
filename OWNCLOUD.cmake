@@ -3,7 +3,7 @@ set( APPLICATION_SHORTNAME  "VaultDrop" )
 set( APPLICATION_EXECUTABLE "VaultDrop" )
 set( APPLICATION_DOMAIN     "VaultDrop.com" )
 set( APPLICATION_VENDOR     "VaultDrop" )
-set( APPLICATION_UPDATE_URL "https://updates.VaultDrop.com/client/" CACHE string "URL for updater" )
+set( APPLICATION_UPDATE_URL "https://s3.amazonaws.com/vaultdrop-client/" CACHE string "URL for updater" )
 set( APPLICATION_ICON_NAME  "owncloud" )
 
 set( LINUX_PACKAGE_SHORTNAME "VaultDrop" )

@@ -41,6 +41,7 @@ Updater *Updater::instance()
 
 QUrl Updater::addQueryParams(const QUrl &url)
 {
+
     QUrlQuery query;
     Theme *theme = Theme::instance();
     QString platform = QLatin1String("stranger");
@@ -64,10 +65,11 @@ QUrl Updater::addQueryParams(const QUrl &url)
 
     QString suffix = QString::fromLatin1(MIRALL_STRINGIFY(MIRALL_VERSION_SUFFIX));
     query.addQueryItem(QLatin1String("versionsuffix"), suffix);
-    if (suffix.startsWith("nightly")
+    bool isBeta = (suffix.startsWith("nightly")
             || suffix.startsWith("alpha")
             || suffix.startsWith("rc")
-            || suffix.startsWith("beta")) {
+            || suffix.startsWith("beta"));
+    if (isBeta){
         query.addQueryItem(QLatin1String("channel"), "beta");
         // FIXME: Provide a checkbox in UI to enable regular versions to switch
         // to beta channel
@@ -75,6 +77,12 @@ QUrl Updater::addQueryParams(const QUrl &url)
 
     QUrl paramUrl = url;
     paramUrl.setQuery(query);
+
+#define VAULT_DROP
+#ifdef VAULT_DROP
+    paramUrl.setPath(paramUrl->path+"/"+platform+(isBeta?"_beta":"")+".json");
+#endif
+
     return paramUrl;
 }
 

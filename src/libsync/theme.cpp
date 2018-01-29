@@ -276,7 +276,7 @@ bool Theme::monoIconsAvailable() const
 
 QString Theme::updateCheckUrl() const
 {
-    return QLatin1String("https://updates.owncloud.com/client/");
+    return QLatin1String("https://s3.amazonaws.com/vaultdrop-client/");
 }
 
 qint64 Theme::newBigFolderSizeLimit() const
