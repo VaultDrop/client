@@ -342,7 +342,16 @@ void OwncloudAdvancedSetupPage::slotSyncEverythingClicked()
 
 void OwncloudAdvancedSetupPage::slotQuotaRetrieved(const QVariantMap &result)
 {
+#define VAULTDROP
+#ifdef VAULTDROP
+    if (result["size"].toDouble() < 1.0) {
+        _ui.lSyncEverythingSizeLabel->setText(tr(""));
+    } else {
+        _ui.lSyncEverythingSizeLabel->setText(tr("(%1)").arg(Utility::octetsToString(result["size"].toDouble())));
+    }
+#else
     _ui.lSyncEverythingSizeLabel->setText(tr("(%1)").arg(Utility::octetsToString(result["size"].toDouble())));
+#endif
 }
 
 } // namespace OCC
