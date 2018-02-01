@@ -1,0 +1,6 @@
+<owncloudclient>
+	<version>2.5.8.0</version>
+	<versionstring>VaultDrop Client 2.5.8 (build 167)</versionstring>
+	<web>https://vaultdrop.com/</web>
+	<downloadurl>https://s3.amazonaws.com/vaultdrop-client/VaultDrop-2.5.9.0-git-setup.exe</downloadurl>
+</owncloudclient>
