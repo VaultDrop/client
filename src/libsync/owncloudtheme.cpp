@@ -88,7 +88,12 @@ QVariant ownCloudTheme::customMedia(Theme::CustomMediaType type)
 
 QString ownCloudTheme::helpUrl() const
 {
+#define OWNCLOUD
+#ifdef OWNCLOUD
+    return QString::fromLatin1("https://s3.amazonaws.com/vaultdrop-client/docs/VaultDropClientDocs.html?ver=%1.%2/").arg(MIRALL_VERSION_MAJOR).arg(MIRALL_VERSION_MINOR);
+#else
     return QString::fromLatin1("https://doc.owncloud.org/desktop/%1.%2/").arg(MIRALL_VERSION_MAJOR).arg(MIRALL_VERSION_MINOR);
+#endif
 }
 
 #ifndef TOKEN_AUTH_ONLY

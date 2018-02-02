@@ -270,8 +270,9 @@ bool Theme::systrayUseMonoIcons() const
 
 bool Theme::monoIconsAvailable() const
 {
-    QString themeDir = QString::fromLatin1(":/client/theme/%1/").arg(Theme::instance()->systrayIconFlavor(true));
-    return QDir(themeDir).exists();
+    //QString themeDir = QString::fromLatin1(":/client/theme/%1/").arg(Theme::instance()->systrayIconFlavor(true));
+    //return QDir(themeDir).exists();
+    return false;
 }
 
 QString Theme::updateCheckUrl() const
