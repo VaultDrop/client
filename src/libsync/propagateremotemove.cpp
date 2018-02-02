@@ -153,7 +153,7 @@ void PropagateRemoteMove::slotMoveJobFinished()
 
     _item->_responseTimeStamp = _job->responseTimestamp();
 
-    if (_item->_httpErrorCode != 201) {
+    if (!(_item->_httpErrorCode == 201 || _item->_httpErrorCode == 204)) {
         // Normally we expect "201 Created"
         // If it is not the case, it might be because of a proxy or gateway intercepting the request, so we must
         // throw an error.

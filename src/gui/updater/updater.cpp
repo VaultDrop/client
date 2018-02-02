@@ -80,7 +80,7 @@ QUrl Updater::addQueryParams(const QUrl &url)
 
 #define VAULTDROP
 #ifdef VAULTDROP
-    paramUrl.setPath(paramUrl.path()+platform+(isBeta?"_beta":"")+".json");
+    paramUrl.setPath(paramUrl.path()+platform+(isBeta?"_beta":"")+".xml");
 #endif
 
     return paramUrl;
