@@ -74,6 +74,228 @@ synchronizing your files.</p>
 </div>
 </div>
 
+
+
+  <div class="section" id="using-the-synchronization-client">
+<h1>Using the Synchronization Client</h1>
+<p id="index-0">The VaultDrop Desktop Client remains in the background and is visible as an icon
+in the system tray (Windows, KDE) or status bar (Mac OS X).</p>
+<div class="figure">
+<img alt="Status icon, icon with with green circle and white checkmark" src="_images/state-ok-64.png" />
+</div>
+<p>The status indicator uses icons to indicate the current status of your
+synchronization. The green circle with the white checkmark tells you that your
+synchronization is current and you are connected to your VaultDrop server.</p>
+<div class="figure">
+<img alt="Status icon, icon with with blue circle and white semi-circles" src="_images/state-sync-64.png" />
+</div>
+<p>The blue icon with the white semi-circles means synchronization is in progress.</p>
+<div class="figure">
+<img alt="Status icon, icon with with yellow circle and vertical parallel lines" src="_images/state-pause-64.png" />
+</div>
+<p>The yellow icon with the parallel lines tells you your synchronization
+has been paused. (Most likely by you.)</p>
+<div class="figure">
+<img alt="Status icon, little gray cloud with gray circle and three horizontal white dots" src="_images/state-offline-64.png" />
+</div>
+<p>The gray icon with three white dots means your sync client has lost its
+connection with your VaultDrop server.</p>
+<div class="figure">
+<img alt="Status icon, icon with with letter &quot;i&quot; in white circle" src="_images/state-information-64.png" />
+</div>
+<p>When you see a white circle with the letter “i” that is the informational icon,
+so you should click it to see what it has to tell you.</p>
+<div class="figure">
+<img alt="Status icon, icon with with red circle and white x" src="_images/state-error-64.png" />
+</div>
+<p>The red circle with the white “x” indicates a configuration error, such as an
+incorrect login or server URL.</p>
+<div class="section" id="systray-icon">
+<h2>Systray Icon</h2>
+<p>A right-click on the systray icon opens a menu for quick access to multiple
+operations.</p>
+<div class="figure">
+<img alt="the right-click sync client menu" src="_images/menu.png" />
+</div>
+<p>This menu provides the following options:</p>
+<ul class="simple">
+<li>Quick access to your account</li>
+<li>Sync status</li>
+<li>Recent Changes, showing latest activities</li>
+<li>Settings</li>
+<li>Help menu</li>
+<li>Pause synchronizations</li>
+<li>An option to log in or log out of all of your accounts at once</li>
+<li>Quit VaultDrop, logging out and closing the client</li>
+</ul>
+<p>A left-click on your systray icon opens the desktop client to the account
+settings window.</p>
+<div class="figure">
+<img alt="Account settings window" src="_images/client6.png" />
+</div>
+<div class="section" id="configuring-VaultDrop-account-settings">
+<h3>Configuring VaultDrop Account Settings</h3>
+<p id="index-1">At the top of the window are tabs for each configured sync account, and three
+others for Activity, General and Network settings. On your account tabs you
+have the following features:</p>
+<ul class="simple">
+<li>Connection status, showing which VaultDrop server you are connected to, and
+your VaultDrop username.</li>
+<li>An <strong>Account</strong> button, which contains a dropdown menu with <strong>Log on</strong>,
+<strong>Log Out</strong>, and <strong>Remove</strong>.</li>
+<!--<li>Used and available space on the server.</li>-->
+<li>Current synchronization status.</li>
+<li><strong>Add Folder Sync Connection</strong> button, which is active only when you have
+removed synchronization on an account (see <strong>Remove Sync</strong> below).</li>
+</ul>
+<p>The little button with three dots (the overflow menu) that sits to the right of
+the sync status bar offers four additional options:</p>
+<ul class="simple">
+<li>Open Folder</li>
+<li>Choose What to Sync (This appears only when your file tree is collapsed, and
+expands the file tree)</li>
+<li>Pause Sync / Resume Sync</li>
+<li>Remove folder sync connection</li>
+</ul>
+<p><strong>Open Folder</strong> opens your local VaultDrop sync folder.</p>
+<p><strong>Pause Sync</strong> pauses sync operations without making any changes to your
+account. It will continue to update file and folder lists, without
+downloading or updating files. To stop all sync activity use <strong>Remove
+Folder Sync Connection</strong>.</p>
+
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">VaultDrop does not preserve the mtime (modification time) of
+directories, though it does update the mtimes on files.</p>
+</div>
+</div>
+</div>
+<div class="section" id="file-manager-overlay-icons">
+<h2>File Manager Overlay Icons</h2>
+<p>The VaultDrop sync client provides overlay icons, in addition to the normal file
+type icons, for your system file manager (Explorer on Windows or Finder on Mac) to indicate the sync status of your VaultDrop files.</p>
+<p>The overlay icons are similar to the systray icons introduced above. They
+behave differently on files and directories according to sync status
+and errors.</p>
+<p>The overlay icon of an individual file indicates its current sync state. If the
+file is in sync with the server version, it displays a green checkmark.</p>
+<p>If the file is ignored from syncing, for example because it is on your
+exclude list, or because it is a symbolic link, it displays a warning icon.</p>
+<p>If there is a sync error, or the file is blacklisted, it displays an
+eye-catching red X.</p>
+<p>If the file is waiting to be synced, or is currently syncing, the overlay
+icon displays a blue cycling icon.</p>
+<p>When the client is offline, no icons are shown to reflect that the
+folder is currently out of sync and no changes are synced to the server.</p>
+<p>The overlay icon of a synced directory indicates the status of the files in the
+directory. If there are any sync errors, the directory is marked with a warning
+icon.</p>
+<p>If a directory includes ignored files that are marked with warning icons
+that does not change the status of the parent directories.</p>
+</div>
+
+<div class="section" id="activity-window">
+<h2>Activity Window</h2>
+<p>The Activity window contains the log of your recent activities, organized over
+three tabs: <strong>Server Activities</strong>, which includes new shares and files
+downloaded and deleted, <strong>Sync Protocol</strong>, which displays local activities such
+as which local folders your files went into, and <strong>Not Synced</strong> shows errors
+such as files not synced.</p>
+<div class="figure">
+<img alt="Activity windows logs all server and client activities." src="_images/client-8.png" />
+</div>
+</div>
+<div class="section" id="server-notifications">
+<h2>Server Notifications</h2>
+<p>Starting with version 2.2.0, the client will display notifications from your
+VaultDrop server that require manual interaction by you.</p>
+<p>The desktop client automatically checks for available notifications
+automatically on a regular basis. Notifications are displayed in the Server
+Activity tab, and if you have <strong>Show Desktop Notifications</strong> enabled (General
+tab) you’ll also see a systray notification.</p>
+<!-- 
+<div class="figure">
+<img alt="Activity window with notification." src="_images/client12.png" />
+</div>
+<p>This also displays notifications sent to users by the VaultDrop admin via the
+Announcements app.</p> -->
+
+</div>
+<div class="section" id="general-window">
+<h2>General Window</h2>
+<p>The General window has configuration options such as <strong>Launch on System
+Startup</strong>, <strong>Use Monochrome Icons</strong>, and <strong>Show Desktop Notifications</strong>. This
+is where you will find the <strong>Edit Ignored Files</strong> button, to launch the ignored
+files editor, and <strong>Ask confirmation before downloading
+folders larger than [folder size]</strong>.</p>
+<div class="figure">
+<img alt="General window contains configuration options." src="_images/client-9.png" />
+</div>
+</div>
+<div class="section" id="using-the-network-window">
+<h2>Using the Network Window</h2>
+<p id="index-2">The Network settings window enables you to define network proxy settings, and
+also to limit download and upload bandwidth.</p>
+<div class="figure">
+<img alt="_images/settings_network.png" src="_images/settings_network.png" />
+</div>
+</div>
+<div class="section" id="using-the-ignored-files-editor">
+<span id="ignoredfileseditor-label"></span><h2>Using the Ignored Files Editor</h2>
+<p id="index-3">You might have some local files or directories that you do not want to backup
+and store on the server. To identify and exclude these files or directories, you
+can use the <em>Ignored Files Editor</em> (General tab.)</p>
+<div class="figure">
+<img alt="_images/ignored_files_editor.png" src="_images/ignored_files_editor.png" />
+</div>
+<p>For your convenience, the editor is pre-populated with a default list of
+typical
+ignore patterns. These patterns are contained in a system file (typically
+<code class="docutils literal"><span class="pre">sync-exclude.lst</span></code>) located in the VaultDrop Client application directory. You
+cannot modify these pre-populated patterns directly from the editor. However,
+if
+necessary, you can hover over any pattern in the list to show the path and
+filename associated with that pattern, locate the file, and edit the
+<code class="docutils literal"><span class="pre">sync-exclude.lst</span></code> file.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Modifying the global exclude definition file might render the client
+unusable or result in undesired behavior.</p>
+</div>
+<p>Each line in the editor contains an ignore pattern string. When creating custom
+patterns, in addition to being able to use normal characters to define an
+ignore pattern, you can use wildcards characters for matching values.  As an
+example, you can use an asterisk (<code class="docutils literal"><span class="pre">*</span></code>) to identify an arbitrary number of
+characters or a question mark (<code class="docutils literal"><span class="pre">?</span></code>) to identify a single character.</p>
+<p>Patterns that end with a slash character (<code class="docutils literal"><span class="pre">/</span></code>) are applied to only directory
+components of the path being checked.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Custom entries are currently not validated for syntactical
+correctness by the editor, so you will not see any warnings for bad
+syntax. If your synchronization does not work as you expected, check your
+syntax.</p>
+</div>
+<p>Each pattern string in the list is preceded by a checkbox. When the check box
+contains a check mark, in addition to ignoring the file or directory component
+matched by the pattern, any matched files are also deemed “fleeting metadata”
+and removed by the client.</p>
+<p>In addition to excluding files and directories that use patterns defined in
+this list:</p>
+<ul class="simple">
+<li>The VaultDrop Client always excludes files containing characters that cannot
+be synchronized to other file systems.</li>
+<li>Files are removed that cause individual errors three times during a
+synchronization. However, the client provides the option of retrying a
+synchronization three additional times on files that produce errors.</li>
+</ul>
+</div>
+</div>
+
+
+
+
+
 					</div>
 				</div>
 			</div>
