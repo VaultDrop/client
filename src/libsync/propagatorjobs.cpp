@@ -14,6 +14,7 @@
  */
 
 #include "propagatorjobs.h"
+#include "owncloudpropagator.h"
 #include "owncloudpropagator_p.h"
 #include "propagateremotemove.h"
 #include "common/utility.h"
@@ -109,6 +110,8 @@ bool PropagateLocalRemove::removeRecursively(const QString &path)
 
 void PropagateLocalRemove::start()
 {
+    _moveToTrash = propagator()->syncOptions()._moveFilesToTrash;
+
     if (propagator()->_abortRequested.fetchAndAddRelaxed(0))
         return;
 
@@ -121,17 +124,25 @@ void PropagateLocalRemove::start()
         return;
     }
 
-    if (_item->isDirectory()) {
-        if (QDir(filename).exists() && !removeRecursively(QString())) {
-            done(SyncFileItem::NormalError, _error);
+    QString removeError;
+    if (_moveToTrash) {
+        if ((QDir(filename).exists() || FileSystem::fileExists(filename))
+            && !FileSystem::moveToTrash(filename, &removeError)) {
+            done(SyncFileItem::NormalError, removeError);
             return;
         }
     } else {
-        QString removeError;
-        if (FileSystem::fileExists(filename)
-            && !FileSystem::remove(filename, &removeError)) {
-            done(SyncFileItem::NormalError, removeError);
-            return;
+        if (_item->isDirectory()) {
+            if (QDir(filename).exists() && !removeRecursively(QString())) {
+                done(SyncFileItem::NormalError, _error);
+                return;
+            }
+        } else {
+            if (FileSystem::fileExists(filename)
+                && !FileSystem::remove(filename, &removeError)) {
+                done(SyncFileItem::NormalError, removeError);
+                return;
+            }
         }
     }
     propagator()->reportProgress(*_item, 0);
@@ -151,13 +162,21 @@ void PropagateLocalMkdir::start()
     // When turning something that used to be a file into a directory
     // we need to delete the file first.
     QFileInfo fi(newDirStr);
-    if (_deleteExistingFile && fi.exists() && fi.isFile()) {
-        QString removeError;
-        if (!FileSystem::remove(newDirStr, &removeError)) {
-            done(SyncFileItem::NormalError,
-                tr("could not delete file %1, error: %2")
-                    .arg(newDirStr, removeError));
-            return;
+    if (fi.exists() && fi.isFile()) {
+        if (_deleteExistingFile) {
+            QString removeError;
+            if (!FileSystem::remove(newDirStr, &removeError)) {
+                done(SyncFileItem::NormalError,
+                    tr("could not delete file %1, error: %2")
+                        .arg(newDirStr, removeError));
+                return;
+            }
+        } else if (_item->_instruction == CSYNC_INSTRUCTION_CONFLICT) {
+            QString error;
+            if (!propagator()->createConflict(_item, _associatedComposite, &error)) {
+                done(SyncFileItem::SoftError, error);
+                return;
+            }
         }
     }
 
@@ -186,7 +205,10 @@ void PropagateLocalMkdir::start()
     }
     propagator()->_journal->commit("localMkdir");
 
-    done(SyncFileItem::Success);
+    auto resultStatus = _item->_instruction == CSYNC_INSTRUCTION_CONFLICT
+        ? SyncFileItem::Conflict
+        : SyncFileItem::Success;
+    done(resultStatus);
 }
 
 void PropagateLocalMkdir::setDeleteExistingFile(bool enabled)

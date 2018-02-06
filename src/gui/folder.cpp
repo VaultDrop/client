@@ -52,7 +52,6 @@ Folder::Folder(const FolderDefinition &definition,
     , _accountState(accountState)
     , _definition(definition)
     , _csyncUnavail(false)
-    , _proxyDirty(true)
     , _lastSyncDuration(0)
     , _consecutiveFailingSyncs(0)
     , _consecutiveFollowUpSyncs(0)
@@ -115,7 +114,6 @@ Folder::~Folder()
     // Reset then engine first as it will abort and try to access members of the Folder
     _engine.reset();
 }
-
 
 void Folder::checkLocalPath()
 {
@@ -600,22 +598,9 @@ bool Folder::reloadExcludes()
     return _engine->excludedFiles().reloadExcludeFiles();
 }
 
-void Folder::setProxyDirty(bool value)
-{
-    _proxyDirty = value;
-}
-
-bool Folder::proxyDirty()
-{
-    return _proxyDirty;
-}
-
 void Folder::startSync(const QStringList &pathList)
 {
     Q_UNUSED(pathList)
-    if (proxyDirty()) {
-        setProxyDirty(false);
-    }
 
     if (isBusy()) {
         qCCritical(lcFolder) << "ERROR csync is still running and new sync requested.";
@@ -641,18 +626,17 @@ void Folder::startSync(const QStringList &pathList)
     setDirtyNetworkLimits();
     setSyncOptions();
 
-    static qint64 fullLocalDiscoveryInterval = []() {
+    static std::chrono::milliseconds fullLocalDiscoveryInterval = []() {
         auto interval = ConfigFile().fullLocalDiscoveryInterval();
         QByteArray env = qgetenv("OWNCLOUD_FULL_LOCAL_DISCOVERY_INTERVAL");
         if (!env.isEmpty()) {
-            interval = env.toLongLong();
+            interval = std::chrono::milliseconds(env.toLongLong());
         }
         return interval;
     }();
-    if (_folderWatcher && _folderWatcher->isReliable()
-        && _timeSinceLastFullLocalDiscovery.isValid()
-        && (fullLocalDiscoveryInterval < 0
-               || _timeSinceLastFullLocalDiscovery.elapsed() < fullLocalDiscoveryInterval)) {
+    if (_folderWatcher && _folderWatcher->isReliable() && _timeSinceLastFullLocalDiscovery.isValid()
+        && (fullLocalDiscoveryInterval.count() < 0
+               || _timeSinceLastFullLocalDiscovery.hasExpired(fullLocalDiscoveryInterval.count()))) {
         qCInfo(lcFolder) << "Allowing local discovery to read from the database";
         _engine->setLocalDiscoveryOptions(LocalDiscoveryStyle::DatabaseAndFilesystem, _localDiscoveryPaths);
 
@@ -686,6 +670,7 @@ void Folder::setSyncOptions()
     auto newFolderLimit = cfgFile.newBigFolderSizeLimit();
     opt._newBigFolderSizeLimit = newFolderLimit.first ? newFolderLimit.second * 1000LL * 1000LL : -1; // convert from MB to B
     opt._confirmExternalStorage = cfgFile.confirmExternalStorage();
+    opt._moveFilesToTrash = cfgFile.moveToTrash();
 
     QByteArray chunkSizeEnv = qgetenv("OWNCLOUD_CHUNK_SIZE");
     if (!chunkSizeEnv.isEmpty()) {
@@ -715,7 +700,7 @@ void Folder::setSyncOptions()
 
     QByteArray targetChunkUploadDurationEnv = qgetenv("OWNCLOUD_TARGET_CHUNK_UPLOAD_DURATION");
     if (!targetChunkUploadDurationEnv.isEmpty()) {
-        opt._targetChunkUploadDuration = targetChunkUploadDurationEnv.toUInt();
+        opt._targetChunkUploadDuration = std::chrono::milliseconds(targetChunkUploadDurationEnv.toUInt());
     } else {
         opt._targetChunkUploadDuration = cfgFile.targetChunkUploadDuration();
     }
@@ -837,7 +822,7 @@ void Folder::slotSyncFinished(bool success)
     // all come in.
     QTimer::singleShot(200, this, &Folder::slotEmitFinishedDelayed);
 
-    _lastSyncDuration = _timeSinceLastSyncStart.elapsed();
+    _lastSyncDuration = std::chrono::milliseconds(_timeSinceLastSyncStart.elapsed());
     _timeSinceLastSyncDone.start();
 
     // Increment the follow-up sync counter if necessary.

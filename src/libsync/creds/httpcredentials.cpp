@@ -248,7 +248,7 @@ void HttpCredentials::deleteOldKeychainEntries()
 
 void HttpCredentials::slotReadClientCertPEMJobDone(QKeychain::Job *incoming)
 {
-    qCWarning(lcHttpCredentials) << "Finished Read Secure String :: " << incoming->key().toAscii();
+    qCWarning(lcHttpCredentials) << "Finished Read Secure String :: " << incoming->key();
 
     // Store PEM in memory
     ReadPasswordJob *readJob = static_cast<ReadPasswordJob *>(incoming);
@@ -276,7 +276,7 @@ void HttpCredentials::slotReadClientCertPEMJobDone(QKeychain::Job *incoming)
 
 void HttpCredentials::slotReadClientKeyPEMJobDone(QKeychain::Job *incoming)
 {
-    qCWarning(lcHttpCredentials) << "Finished Read Secure String :: " << incoming->key().toAscii();
+    qCWarning(lcHttpCredentials) << "Finished Read Secure String :: " << incoming->key();
 
     // Store key in memory
     ReadPasswordJob *readJob = static_cast<ReadPasswordJob *>(incoming);
@@ -323,7 +323,7 @@ bool HttpCredentials::stillValid(QNetworkReply *reply)
 
 void HttpCredentials::slotReadJobDone(QKeychain::Job *incomingJob)
 {
-    qCWarning(lcHttpCredentials) << "Finished Read Secure String :: " << incomingJob->key().toAscii();
+    qCWarning(lcHttpCredentials) << "Finished Read Secure String :: " << incomingJob->key();
 
     QKeychain::ReadPasswordJob *job = static_cast<ReadPasswordJob *>(incomingJob);
     QKeychain::Error error = job->error();
@@ -549,7 +549,7 @@ void HttpCredentials::slotWriteJobDone(QKeychain::Job *job)
         qCWarning(lcHttpCredentials) << "Error while writing password" << job->errorString();
     }
 
-    qCWarning(lcHttpCredentials) << "Finished Writing Secure String :: " << job->key().toAscii();
+    qCWarning(lcHttpCredentials) << "Finished Writing Secure String :: " << job->key();
 
     WritePasswordJob *wjob = qobject_cast<WritePasswordJob *>(job);
     wjob->deleteLater();
