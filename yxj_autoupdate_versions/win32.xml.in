@@ -2,5 +2,5 @@
 	<version>VALUT_DROP_VERSION</version>
 	<versionstring>VaultDrop Client VALUT_DROP_VERSION</versionstring>
 	<web>https://vaultdrop.com/</web>
-	<downloadurl>https://s3.amazonaws.com/vaultdrop-client/VaultDrop-VALUT_DROP_VERSION-git-setup.exe</downloadurl>
+	<downloadurl>https://s3.amazonaws.com/vaultdrop-client/VaultDrop-VALUT_DROP_VERSION-cs-setup.exe</downloadurl>
 </owncloudclient>

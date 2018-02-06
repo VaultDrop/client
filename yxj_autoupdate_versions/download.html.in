@@ -4,7 +4,7 @@
 <body>
 <h2>VaultDrop Download Links</h2>
 <ol>
-	<li>Windows:   <a href="https://s3.amazonaws.com/vaultdrop-client/VaultDrop-VALUT_DROP_VERSION-git-setup.exe">VaultDrop-VALUT_DROP_VERSION</a></li>
+	<li>Windows:   <a href="https://s3.amazonaws.com/vaultdrop-client/VaultDrop-VALUT_DROP_VERSION-cs-setup.exe">VaultDrop-VALUT_DROP_VERSION</a></li>
 	<li>Apple Mac: <a href="https://s3.amazonaws.com/vaultdrop-client/VaultDrop-VALUT_DROP_VERSION-git.pkg">VaultDrop-VALUT_DROP_VERSION</a></li>
 </ol>
 </body>
