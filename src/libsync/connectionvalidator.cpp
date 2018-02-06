@@ -247,7 +247,6 @@ void ConnectionValidator::slotAuthSuccess()
 
 void ConnectionValidator::checkServerCapabilities()
 {
-
     // The main flow now needs the capabilities
     JsonApiJob *job = new JsonApiJob(_account, QLatin1String("ocs/v1.php/cloud/capabilities"), this);
     job->setTimeout(timeoutToUseMsec);
