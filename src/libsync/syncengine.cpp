@@ -432,6 +432,7 @@ int SyncEngine::treewalkFile(csync_file_stat_t *file, csync_file_stat_t *other, 
         item->_modtime = file->modtime;
         item->_size = file->size;
         item->_checksumHeader = file->checksumHeader;
+        item->_type = file->type;
     } else {
         if (instruction != CSYNC_INSTRUCTION_NONE) {
             qCWarning(lcEngine) << "ERROR: Instruction" << item->_instruction << "vs" << instruction << "for" << fileUtf8;
@@ -537,9 +538,6 @@ int SyncEngine::treewalkFile(csync_file_stat_t *file, csync_file_stat_t *other, 
             item->_errorString = tr("Conflict: Server version downloaded, local copy renamed and not uploaded.");
         }
         break;
-    case CYSNC_STATUS_FILE_LOCKED_OR_OPEN:
-        item->_errorString = QLatin1String("File locked"); // don't translate, internal use!
-        break;
     case CSYNC_STATUS_INDIVIDUAL_STAT_FAILED:
         item->_errorString = tr("Stat failed.");
         break;
@@ -581,8 +579,6 @@ int SyncEngine::treewalkFile(csync_file_stat_t *file, csync_file_stat_t *other, 
     if (!item->_inode) {
         item->_inode = file->inode;
     }
-
-    item->_type = file->type;
 
     SyncFileItem::Direction dir = SyncFileItem::None;
 

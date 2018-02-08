@@ -16,6 +16,7 @@
 
 #include "owncloudlib.h"
 #include <QString>
+#include <chrono>
 
 
 namespace OCC {
@@ -31,6 +32,9 @@ struct SyncOptions
 
     /** If a confirmation should be asked for external storages */
     bool _confirmExternalStorage = false;
+
+    /** If remotely deleted files are needed to move to trash */
+    bool _moveFilesToTrash = false;
 
     /** The initial un-adjusted chunk size in bytes for chunked uploads, both
      * for old and new chunking algorithm, which classifies the item to be chunked
@@ -51,7 +55,7 @@ struct SyncOptions
      *
      * Set to 0 it will disable dynamic chunk sizing.
      */
-    quint64 _targetChunkUploadDuration = 60 * 1000; // 1 minute
+    std::chrono::milliseconds _targetChunkUploadDuration = std::chrono::minutes(1);
 
     /** Whether parallel network jobs are allowed. */
     bool _parallelNetworkJobs = true;

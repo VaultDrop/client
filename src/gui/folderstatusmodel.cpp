@@ -205,7 +205,7 @@ QVariant FolderStatusModel::data(const QModelIndex &index, int role) const
     case FolderStatusDelegate::FolderSecondPathRole:
         return f->remotePath();
     case FolderStatusDelegate::FolderConflictMsg:
-        return (f->syncResult().numNewConflictItems() + f->syncResult().numOldConflictItems() > 0)
+        return (f->syncResult().hasUnresolvedConflicts())
             ? QStringList(tr("There are unresolved conflicts. Click for details."))
             : QStringList();
     case FolderStatusDelegate::FolderErrorMsg:
@@ -298,7 +298,7 @@ bool FolderStatusModel::setData(const QModelIndex &index, const QVariant &value,
                 // also check all the children
                 for (int i = 0; i < info->_subs.count(); ++i) {
                     if (info->_subs[i]._checked != Qt::Checked) {
-                        setData(index.child(i, 0), Qt::Checked, Qt::CheckStateRole);
+                        setData(this->index(i, 0, index), Qt::Checked, Qt::CheckStateRole);
                     }
                 }
             }
@@ -313,7 +313,7 @@ bool FolderStatusModel::setData(const QModelIndex &index, const QVariant &value,
                 // Uncheck all the children
                 for (int i = 0; i < info->_subs.count(); ++i) {
                     if (info->_subs[i]._checked != Qt::Unchecked) {
-                        setData(index.child(i, 0), Qt::Unchecked, Qt::CheckStateRole);
+                        setData(this->index(i, 0, index), Qt::Unchecked, Qt::CheckStateRole);
                     }
                 }
             }
@@ -703,7 +703,7 @@ void FolderStatusModel::slotUpdateDirectories(const QStringList &list)
     }
 
     for (auto it = undecidedIndexes.begin(); it != undecidedIndexes.end(); ++it) {
-        suggestExpand(idx.child(*it, 0));
+        suggestExpand(index(*it, 0, idx));
     }
 
 /* We need lambda function for the following code.
@@ -1070,7 +1070,8 @@ void FolderStatusModel::slotFolderSyncStateChange(Folder *f)
     // update the icon etc. now
     slotUpdateFolderState(f);
 
-    if (state == SyncResult::Success && f->syncResult().folderStructureWasChanged()) {
+    if (f->syncResult().folderStructureWasChanged()
+        && (state == SyncResult::Success || state == SyncResult::Problem)) {
         // There is a new or a removed folder. reset all data
         auto &info = _folders[folderIndex];
         info.resetSubs(this, index(folderIndex));

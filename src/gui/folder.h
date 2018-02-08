@@ -29,6 +29,7 @@
 #include <QStringList>
 #include <QUuid>
 #include <set>
+#include <chrono>
 
 class QThread;
 class QSettings;
@@ -172,12 +173,6 @@ public:
     SyncResult syncResult() const;
 
     /**
-      * set the config file name.
-      */
-    void setConfigFile(const QString &);
-    QString configFile();
-
-    /**
       * This is called if the sync folder definition is removed. Do cleanups here.
       */
     virtual void wipe();
@@ -198,8 +193,8 @@ public:
     SyncEngine &syncEngine() { return *_engine; }
 
     RequestEtagJob *etagJob() { return _requestEtagJob; }
-    qint64 msecSinceLastSync() const { return _timeSinceLastSyncDone.elapsed(); }
-    qint64 msecLastSyncDuration() const { return _lastSyncDuration; }
+    std::chrono::milliseconds msecSinceLastSync() const { return std::chrono::milliseconds(_timeSinceLastSyncDone.elapsed()); }
+    std::chrono::milliseconds msecLastSyncDuration() const { return _lastSyncDuration; }
     int consecutiveFollowUpSyncs() const { return _consecutiveFollowUpSyncs; }
     int consecutiveFailingSyncs() const { return _consecutiveFailingSyncs; }
 
@@ -276,9 +271,6 @@ public slots:
       */
     void startSync(const QStringList &pathList = QStringList());
 
-    void setProxyDirty(bool value);
-    bool proxyDirty();
-
     int slotDiscardDownloadProgress();
     int downloadInfoCount();
     int slotWipeErrorBlacklist();
@@ -351,13 +343,12 @@ private:
     SyncResult _syncResult;
     QScopedPointer<SyncEngine> _engine;
     bool _csyncUnavail;
-    bool _proxyDirty;
     QPointer<RequestEtagJob> _requestEtagJob;
     QString _lastEtag;
     QElapsedTimer _timeSinceLastSyncDone;
     QElapsedTimer _timeSinceLastSyncStart;
     QElapsedTimer _timeSinceLastFullLocalDiscovery;
-    qint64 _lastSyncDuration;
+    std::chrono::milliseconds _lastSyncDuration;
 
     /// The number of syncs that failed in a row.
     /// Reset when a sync is successful.

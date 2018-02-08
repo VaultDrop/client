@@ -13,6 +13,7 @@
  */
 
 #include <QUrl>
+#include <QUrlQuery>
 #include <QProcess>
 
 #include "updater/updater.h"
@@ -39,7 +40,7 @@ Updater *Updater::instance()
     return _instance;
 }
 
-QUrl Updater::addQueryParams(const QUrl &url)
+QUrlQuery Updater::getQueryParams()
 {
 
     QUrlQuery query;
@@ -66,7 +67,7 @@ QUrl Updater::addQueryParams(const QUrl &url)
     QString suffix = QString::fromLatin1(MIRALL_STRINGIFY(MIRALL_VERSION_SUFFIX));
     query.addQueryItem(QLatin1String("versionsuffix"), suffix);
     bool isBeta = (suffix.startsWith("nightly")
-            || suffix.startsWith("alpha")
+            || suffix.startsWith("daily")            || suffix.startsWith("alpha")
             || suffix.startsWith("rc")
             || suffix.startsWith("beta"));
     if (isBeta){
@@ -75,17 +76,8 @@ QUrl Updater::addQueryParams(const QUrl &url)
         // to beta channel
     }
 
-    QUrl paramUrl = url;
-    paramUrl.setQuery(query);
-
-#define VAULTDROP
-#ifdef VAULTDROP
-    paramUrl.setPath(paramUrl.path()+platform+(isBeta?"_beta":"")+".xml");
-#endif
-
-    return paramUrl;
+    return query;
 }
-
 
 QString Updater::getSystemInfo()
 {
@@ -115,9 +107,34 @@ Updater *Updater::create()
         qCWarning(lcUpdater) << "Not a valid updater URL, will not do update check";
         return 0;
     }
-    updateBaseUrl = addQueryParams(updateBaseUrl);
+
+    auto urlQuery = getQueryParams();
+
 #if defined(Q_OS_MAC) && defined(HAVE_SPARKLE)
-    updateBaseUrl.addQueryItem(QLatin1String("sparkle"), QLatin1String("true"));
+    urlQuery.addQueryItem(QLatin1String("sparkle"), QLatin1String("true"));
+#endif
+
+#define VAULTDROP
+#ifdef VAULTDROP
+    {
+        QString platform = QLatin1String("stranger");
+        if (Utility::isLinux()) {
+            platform = QLatin1String("linux");
+        } else if (Utility::isBSD()) {
+            platform = QLatin1String("bsd");
+        } else if (Utility::isWindows()) {
+            platform = QLatin1String("win32");
+        } else if (Utility::isMac()) {
+            platform = QLatin1String("macos");
+        }
+
+        updateBaseUrl.setPath(updateBaseUrl.path()+platform+".xml");
+    }
+#endif
+
+    updateBaseUrl.setQuery(urlQuery);
+
+#if defined(Q_OS_MAC) && defined(HAVE_SPARKLE)
     return new SparkleUpdater(updateBaseUrl.toString());
 #elif defined(Q_OS_WIN32)
     // the best we can do is notify about updates
