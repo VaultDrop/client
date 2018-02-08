@@ -180,7 +180,7 @@ void HttpCredentials::fetchFromKeychain()
     if (!_ready && !_refreshToken.isEmpty()) {
         // This happens if the credentials are still loaded from the keychain, bur we are called
         // here because the auth is invalid, so this means we simply need to refresh the credentials
-        refreshAccessToken();
+        refreshAccessToken2();
         return;
     }
 
@@ -351,7 +351,7 @@ void HttpCredentials::slotReadJobDone(QKeychain::Job *incomingJob)
     }
 
     if (!_refreshToken.isEmpty() && error == NoError) {
-        refreshAccessToken();
+        refreshAccessToken2();
     } else if (!_password.isEmpty() && error == NoError) {
         // All cool, the keychain did not come back with error.
         // Still, the password can be empty which indicates a problem and
@@ -376,14 +376,22 @@ void HttpCredentials::slotReadJobDone(QKeychain::Job *incomingJob)
         qCWarning(lcHttpCredentials) << "Migrated old keychain entries";
     }
 }
+bool HttpCredentials::refreshAccessToken() {
+    return refreshAccessToken2();
+}
 
-bool HttpCredentials::refreshAccessToken()
+bool HttpCredentials::refreshAccessToken2()
 {
+    return false;
+
     if (_refreshToken.isEmpty())
         return false;
+
 #ifdef VAULTDROP_OAUTH
+        qCWarning(lcHttpCredentials) << "Inspection point:2";
     QUrl requestToken = Utility::concatUrlPath(_account->url(), QLatin1String("/login/authtkt"));
 #else
+        qCWarning(lcHttpCredentials) << "Inspection point:3";
     QUrl requestToken = Utility::concatUrlPath(_account->url(), QLatin1String("/index.php/apps/oauth2/api/v1/token"));
 #endif
     QNetworkRequest req;
@@ -391,15 +399,23 @@ bool HttpCredentials::refreshAccessToken()
 
     auto clientId = Theme::instance()->oauthClientId();
     auto clientSecret = Theme::instance()->oauthClientSecret();
-    QString basicAuth = QString("%1:%2").arg(clientId, basicAuth);
+        qCWarning(lcHttpCredentials) << "Inspection point:4 " << clientId << " and " << clientSecret;
+
+    QString basicAuth = QString("%1:%2").arg(clientId, clientSecret);
+
+
+    // QString basicAuth = QString("%1:%2").arg(Theme::instance()->oauthClientId(), Theme::instance()->oauthClientSecret());
+
 #ifdef VAULTDROP_OAUTH
     req.setRawHeader("Authorization", "authtkt " + basicAuth.toUtf8().toBase64());
 #else
     req.setRawHeader("Authorization", "Basic " + basicAuth.toUtf8().toBase64());
 #endif
     auto requestBody = new QBuffer;
+        qCWarning(lcHttpCredentials) << "Inspection point:5";
     QUrlQuery arguments(QString("grant_type=refresh_token&refresh_token=%1").arg(_refreshToken));
     requestBody->setData(arguments.query(QUrl::FullyEncoded).toLatin1());
+        qCWarning(lcHttpCredentials) << "Inspection point:6";
 
     auto job = _account->sendRequest("POST", requestToken, req, requestBody);
     job->setTimeout(qMin(30 * 1000ll, job->timeoutMsec()));
