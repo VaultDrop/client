@@ -841,6 +841,15 @@ void AccountSettings::slotDeleteAccount()
     // Deleting the account potentially deletes 'this', so
     // the QMessageBox should be destroyed before that happens.
     {
+#define VAULTDROP
+#ifdef VAULTDROP
+        QMessageBox messageBox(QMessageBox::Question,
+            tr("Confirm Account Removal"),
+            tr("<p>Do you really want to remove the connection to VaultDrop?</p>"
+               "<p><b>Note:</b> This will <b>not</b> delete any files.</p>"),
+            QMessageBox::NoButton,
+            this);
+#else
         QMessageBox messageBox(QMessageBox::Question,
             tr("Confirm Account Removal"),
             tr("<p>Do you really want to remove the connection to the account <i>%1</i>?</p>"
@@ -848,6 +857,8 @@ void AccountSettings::slotDeleteAccount()
                 .arg(_accountState->account()->displayName()),
             QMessageBox::NoButton,
             this);
+#endif
+
         QPushButton *yesButton =
             messageBox.addButton(tr("Remove connection"), QMessageBox::YesRole);
         messageBox.addButton(tr("Cancel"), QMessageBox::NoRole);
