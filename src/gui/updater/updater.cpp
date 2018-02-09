@@ -125,8 +125,13 @@ Updater *Updater::create()
         } else if (Utility::isWindows()) {
             platform = QLatin1String("win32");
         } else if (Utility::isMac()) {
+			
+#if defined(Q_OS_MAC) && defined(HAVE_SPARKLE)
+            platform = QLatin1String("macos-sparkle);
+#else
             platform = QLatin1String("macos");
-        }
+#endif
+		}
 
         updateBaseUrl.setPath(updateBaseUrl.path()+platform+".xml");
     }
