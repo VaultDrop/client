@@ -164,7 +164,7 @@ void OAuth::start()
                         // We are still listening on the socket so we will get the new connection
                         return;
                     }
-                    const char *loginSuccessfullHtml = "<h1>Login Successful</h1><p>You can close this window.</p>";
+                    const char *loginSuccessfullHtml = "<html><head><title>Log in Successful</title></head><body><h1>Log in Successful</h1><p>You can close this window.</p></body>";
                     if (messageUrl.isValid()) {
                         httpReplyAndClose(socket, "303 See Other", loginSuccessfullHtml,
                             QByteArray("Location: " + messageUrl.toEncoded()).constData());
