@@ -15,7 +15,6 @@ osslsigncode -pkcs12 ../../../yxj_vaultdrop_certificate/VaultDropCodeSigningKey.
           -out ../../../build-win32/VaultDrop-${VDVER}-cs-setup.exe
 
 sed -e "s/VALUT_DROP_VERSION/${VDVER}/g" '../../../yxj_autoupdate_versions/download.html.in' > '../../../yxj_autoupdate_versions/download.html'
-sed -e "s/VALUT_DROP_VERSION/${VDVER}/g" '../../../yxj_autoupdate_versions/macos.xml.in' > '../../../yxj_autoupdate_versions/macos.xml'
 sed -e "s/VALUT_DROP_VERSION/${VDVER}/g" '../../../yxj_autoupdate_versions/win32.xml.in' > '../../../yxj_autoupdate_versions/win32.xml'
 
 sudo cp ../../../build-win32/VaultDrop-2.*-setup.exe ../../../build-win32/bin/VaultDrop.exe ../../../yxj_autoupdate_versions/*.xml ../../../yxj_autoupdate_versions/*.html /media/sf_VaultDrop/client/yxj_autoupdate_versions/
