@@ -123,7 +123,13 @@ void ActivityListModel::startFetchJob(AccountState *s)
     if (!s->isConnected()) {
         return;
     }
+
+#define VAULTDROP
+#ifdef VAULTDROP
+    JsonApiJob *job = new JsonApiJob(s->account(), QLatin1String("activity.php"), this);
+#else
     JsonApiJob *job = new JsonApiJob(s->account(), QLatin1String("ocs/v1.php/cloud/activity"), this);
+#endif
     QObject::connect(job, &JsonApiJob::jsonReceived,
         this, &ActivityListModel::slotActivitiesReceived);
     job->setProperty("AccountStatePtr", QVariant::fromValue<QPointer<AccountState>>(s));

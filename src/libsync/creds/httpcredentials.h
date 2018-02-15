@@ -100,7 +100,6 @@ public:
      * otherwise return false
      */
     bool refreshAccessToken();
-    bool refreshAccessToken2();
 
     // To fetch the user name as early as possible
     void setAccount(Account *account) Q_DECL_OVERRIDE;
