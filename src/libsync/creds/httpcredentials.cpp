@@ -180,7 +180,7 @@ void HttpCredentials::fetchFromKeychain()
     if (!_ready && !_refreshToken.isEmpty()) {
         // This happens if the credentials are still loaded from the keychain, bur we are called
         // here because the auth is invalid, so this means we simply need to refresh the credentials
-        refreshAccessToken2();
+        refreshAccessToken();
         return;
     }
 
@@ -188,26 +188,7 @@ void HttpCredentials::fetchFromKeychain()
         Q_EMIT fetched();
     } else {
         _keychainMigration = false;
-
-#define VAULTDROP
-#ifdef VAULTDROP_XXXYYY
-        // Now fetch the actual server password
-        const QString kck = keychainKey(
-            _account->url().toString(),
-            _user,
-            _keychainMigration ? QString() : _account->id());
-
-        ReadPasswordJob *job = new ReadPasswordJob(Theme::instance()->appName());
-        addSettingsToJob(_account, job);
-        job->setInsecureFallback(false);
-        job->setKey(kck);
-        qCWarning(lcHttpCredentials) << "Reading Secure String :: " << kck;
-        connect(job, &Job::finished, this, &HttpCredentials::slotReadJobDone);
-        job->start();
-#else
-        // This path attempts to use a client key -- which is never saved.
         fetchFromKeychainHelper();
-#endif
     }
 }
 
@@ -223,8 +204,6 @@ void HttpCredentials::fetchFromKeychainHelper()
     addSettingsToJob(_account, job);
     job->setInsecureFallback(false);
     job->setKey(kck);
-    qCWarning(lcHttpCredentials) << "Reading Secure String :: " << kck;
-
     connect(job, &Job::finished, this, &HttpCredentials::slotReadClientCertPEMJobDone);
     job->start();
 }
@@ -237,8 +216,6 @@ void HttpCredentials::deleteOldKeychainEntries()
         job->setInsecureFallback(true);
         job->setKey(keychainKey(_account->url().toString(), user, QString()));
         job->start();
-        qCWarning(lcHttpCredentials) << "Delete Secure String :: " << keychainKey(_account->url().toString(), user, QString());
-
     };
 
     startDeleteJob(_user);
@@ -248,8 +225,6 @@ void HttpCredentials::deleteOldKeychainEntries()
 
 void HttpCredentials::slotReadClientCertPEMJobDone(QKeychain::Job *incoming)
 {
-    qCWarning(lcHttpCredentials) << "Finished Read Secure String :: " << incoming->key();
-
     // Store PEM in memory
     ReadPasswordJob *readJob = static_cast<ReadPasswordJob *>(incoming);
     if (readJob->error() == NoError && readJob->binaryData().length() > 0) {
@@ -264,7 +239,6 @@ void HttpCredentials::slotReadClientCertPEMJobDone(QKeychain::Job *incoming)
         _account->url().toString(),
         _user + clientKeyPEMC,
         _keychainMigration ? QString() : _account->id());
-    qCWarning(lcHttpCredentials) << "Reading Secure String :: " << kck;
 
     ReadPasswordJob *job = new ReadPasswordJob(Theme::instance()->appName());
     addSettingsToJob(_account, job);
@@ -276,8 +250,6 @@ void HttpCredentials::slotReadClientCertPEMJobDone(QKeychain::Job *incoming)
 
 void HttpCredentials::slotReadClientKeyPEMJobDone(QKeychain::Job *incoming)
 {
-    qCWarning(lcHttpCredentials) << "Finished Read Secure String :: " << incoming->key();
-
     // Store key in memory
     ReadPasswordJob *readJob = static_cast<ReadPasswordJob *>(incoming);
 
@@ -307,7 +279,6 @@ void HttpCredentials::slotReadClientKeyPEMJobDone(QKeychain::Job *incoming)
     addSettingsToJob(_account, job);
     job->setInsecureFallback(false);
     job->setKey(kck);
-    qCWarning(lcHttpCredentials) << "Reading Secure String :: " << kck;
     connect(job, &Job::finished, this, &HttpCredentials::slotReadJobDone);
     job->start();
 }
@@ -323,11 +294,8 @@ bool HttpCredentials::stillValid(QNetworkReply *reply)
 
 void HttpCredentials::slotReadJobDone(QKeychain::Job *incomingJob)
 {
-    qCWarning(lcHttpCredentials) << "Finished Read Secure String :: " << incomingJob->key();
-
     QKeychain::ReadPasswordJob *job = static_cast<ReadPasswordJob *>(incomingJob);
     QKeychain::Error error = job->error();
-
 
     // If we can't find the credentials at the keys that include the account id,
     // try to read them from the legacy locations that don't have a account id.
@@ -339,7 +307,12 @@ void HttpCredentials::slotReadJobDone(QKeychain::Job *incomingJob)
         return;
     }
 
+#ifdef VAULTDROP_OAUTH
+    bool isOauth = true;
+#else
     bool isOauth = _account->credentialSetting(QLatin1String(isOAuthC)).toBool();
+#endif
+
     if (isOauth) {
         _refreshToken = job->textData();
     } else {
@@ -351,7 +324,7 @@ void HttpCredentials::slotReadJobDone(QKeychain::Job *incomingJob)
     }
 
     if (!_refreshToken.isEmpty() && error == NoError) {
-        refreshAccessToken2();
+        refreshAccessToken();
     } else if (!_password.isEmpty() && error == NoError) {
         // All cool, the keychain did not come back with error.
         // Still, the password can be empty which indicates a problem and
@@ -376,22 +349,16 @@ void HttpCredentials::slotReadJobDone(QKeychain::Job *incomingJob)
         qCWarning(lcHttpCredentials) << "Migrated old keychain entries";
     }
 }
-bool HttpCredentials::refreshAccessToken() {
-    return refreshAccessToken2();
-}
 
-bool HttpCredentials::refreshAccessToken2()
+bool HttpCredentials::refreshAccessToken()
 {
-    return false;
-
     if (_refreshToken.isEmpty())
         return false;
 
-#ifdef VAULTDROP_OAUTH
-        qCWarning(lcHttpCredentials) << "Inspection point:2";
+#define VAULTDROP
+#ifdef VAULTDROP
     QUrl requestToken = Utility::concatUrlPath(_account->url(), QLatin1String("/login/authtkt"));
 #else
-        qCWarning(lcHttpCredentials) << "Inspection point:3";
     QUrl requestToken = Utility::concatUrlPath(_account->url(), QLatin1String("/index.php/apps/oauth2/api/v1/token"));
 #endif
     QNetworkRequest req;
@@ -399,23 +366,18 @@ bool HttpCredentials::refreshAccessToken2()
 
     auto clientId = Theme::instance()->oauthClientId();
     auto clientSecret = Theme::instance()->oauthClientSecret();
-        qCWarning(lcHttpCredentials) << "Inspection point:4 " << clientId << " and " << clientSecret;
-
     QString basicAuth = QString("%1:%2").arg(clientId, clientSecret);
-
 
     // QString basicAuth = QString("%1:%2").arg(Theme::instance()->oauthClientId(), Theme::instance()->oauthClientSecret());
 
-#ifdef VAULTDROP_OAUTH
+#ifdef VAULTDROP
     req.setRawHeader("Authorization", "authtkt " + basicAuth.toUtf8().toBase64());
 #else
     req.setRawHeader("Authorization", "Basic " + basicAuth.toUtf8().toBase64());
 #endif
     auto requestBody = new QBuffer;
-        qCWarning(lcHttpCredentials) << "Inspection point:5";
     QUrlQuery arguments(QString("grant_type=refresh_token&refresh_token=%1").arg(_refreshToken));
     requestBody->setData(arguments.query(QUrl::FullyEncoded).toLatin1());
-        qCWarning(lcHttpCredentials) << "Inspection point:6";
 
     auto job = _account->sendRequest("POST", requestToken, req, requestBody);
     job->setTimeout(qMin(30 * 1000ll, job->timeoutMsec()));
@@ -470,8 +432,6 @@ void HttpCredentials::invalidateToken()
     }
 
     DeletePasswordJob *job = new DeletePasswordJob(Theme::instance()->appName());
-    qCWarning(lcHttpCredentials) << "Delete Read Secure String :: " << kck;
-
     addSettingsToJob(_account, job);
     job->setInsecureFallback(true);
     job->setKey(kck);
@@ -511,13 +471,9 @@ void HttpCredentials::persist()
         addSettingsToJob(_account, job);
         job->setInsecureFallback(false);
         connect(job, &Job::finished, this, &HttpCredentials::slotWriteClientCertPEMJobDone);
-        QString kck = keychainKey(_account->url().toString(), _user + clientCertificatePEMC, _account->id());
-        job->setKey(kck);
-        qCWarning(lcHttpCredentials) << "Writing Secure String :: " << kck;
-
+        job->setKey(keychainKey(_account->url().toString(), _user + clientCertificatePEMC, _account->id()));
         job->setBinaryData(_clientSslCertificate.toPem());
         job->start();
-
     } else {
         slotWriteClientCertPEMJobDone();
     }
@@ -531,10 +487,7 @@ void HttpCredentials::slotWriteClientCertPEMJobDone()
         addSettingsToJob(_account, job);
         job->setInsecureFallback(false);
         connect(job, &Job::finished, this, &HttpCredentials::slotWriteClientKeyPEMJobDone);
-        QString kck = keychainKey(_account->url().toString(), _user + clientKeyPEMC, _account->id());
-        job->setKey(kck);
-        qCWarning(lcHttpCredentials) << "Writing Secure String :: " << kck;
-
+        job->setKey(keychainKey(_account->url().toString(), _user + clientKeyPEMC, _account->id()));
         job->setBinaryData(_clientSslKey.toPem());
         job->start();
     } else {
@@ -546,11 +499,9 @@ void HttpCredentials::slotWriteClientKeyPEMJobDone()
 {
     WritePasswordJob *job = new WritePasswordJob(Theme::instance()->appName());
     addSettingsToJob(_account, job);
-    const QString key = keychainKey(_account->url().toString(), _user, _account->id());
-    qCWarning(lcHttpCredentials) << "Writing Secure String :: " << key;
     job->setInsecureFallback(false);
     connect(job, &Job::finished, this, &HttpCredentials::slotWriteJobDone);
-    job->setKey(key);
+    job->setKey(keychainKey(_account->url().toString(), _user, _account->id()));
     job->setTextData(isUsingOAuth() ? _refreshToken : _password);
     job->start();
 }
@@ -564,9 +515,6 @@ void HttpCredentials::slotWriteJobDone(QKeychain::Job *job)
     default:
         qCWarning(lcHttpCredentials) << "Error while writing password" << job->errorString();
     }
-
-    qCWarning(lcHttpCredentials) << "Finished Writing Secure String :: " << job->key();
-
     WritePasswordJob *wjob = qobject_cast<WritePasswordJob *>(job);
     wjob->deleteLater();
 }
