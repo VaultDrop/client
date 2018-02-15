@@ -9,8 +9,9 @@ admin/osx/create_mac.sh ../install . "Developer ID Installer: Vault Drop, LLC (9
 
 VDVER=$(grep MIRALL_VERSION_FULL version.h | sed -e 's/#define MIRALL_VERSION_FULL //' | sed -e 's/[" ]//g')
 sed -e "s/VALUT_DROP_VERSION/${VDVER}/g" '../yxj_autoupdate_versions/macos.xml.in' > '../yxj_autoupdate_versions/macos.xml'
-cp ../install/VaultDrop-${VDVER}-git.pkg ../install/VaultDrop-${VDVER}-git.pkg.tbz ../yxj_autoupdate_versions/
-cp ../install/VaultDrop-${VDVER}-git.pkg ../yxj_autoupdate_versions/VaultDrop-${VDVER}.pkg
+sed -e "s/VALUT_DROP_VERSION/${VDVER}/g" '../yxj_autoupdate_versions/macos-sparkle.xml.in' > '../yxj_autoupdate_versions/macos-sparkle.xml'
+cp -v ../install/VaultDrop-${VDVER}-git.pkg ../install/VaultDrop-${VDVER}-git.pkg.tbz ../yxj_autoupdate_versions/
+cp -v ../install/VaultDrop-${VDVER}-git.pkg ../yxj_autoupdate_versions/VaultDrop-${VDVER}.pkg
 
 
 
