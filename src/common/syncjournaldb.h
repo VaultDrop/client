@@ -159,19 +159,28 @@ public:
     void setSelectiveSyncList(SelectiveSyncListType type, const QStringList &list);
 
     /**
-     * Make sure that on the next sync, fileName is not read from the DB but uses the PROPFIND to
-     * get the info from the server
+     * Make sure that on the next sync fileName and its parents are discovered from the server.
      *
-     * Specifically, this sets the md5 field of fileName and all its parents to _invalid_.
+     * That means its metadata and, if it's a directory, its direct contents.
+     *
+     * Specifically, etag (md5 field) of fileName and all its parents are set to _invalid_.
      * That causes a metadata difference and a resulting discovery from the remote for the
      * affected folders.
      *
      * Since folders in the selective sync list will not be rediscovered (csync_ftw,
-     * _csync_detect_update skip them), the _invalid_ marker will stay and it. And any
+     * _csync_detect_update skip them), the _invalid_ marker will stay. And any
      * child items in the db will be ignored when reading a remote tree from the database.
+     *
+     * Any setFileRecord() call to affected directories before the next sync run will be
+     * adjusted to retain the invalid etag via _etagStorageFilter.
      */
     void avoidReadFromDbOnNextSync(const QString &fileName) { avoidReadFromDbOnNextSync(fileName.toUtf8()); }
     void avoidReadFromDbOnNextSync(const QByteArray &fileName);
+
+    /**
+     * Wipe _etagStorageFilter. Also done implicitly on close().
+     */
+    void clearEtagStorageFilter();
 
     /**
      * Ensures full remote discovery happens on the next sync.
@@ -286,11 +295,20 @@ private:
     QScopedPointer<SqlQuery> _setConflictRecordQuery;
     QScopedPointer<SqlQuery> _deleteConflictRecordQuery;
 
-    /* This is the list of paths we called avoidReadFromDbOnNextSync on.
-     * It means that they should not be written to the DB in any case since doing
-     * that would write the etag and would void the purpose of avoidReadFromDbOnNextSync
+    /* Storing etags to these folders, or their parent folders, is filtered out.
+     *
+     * When avoidReadFromDbOnNextSync() is called some etags to _invalid_ in the
+     * database. If this is done during a sync run, a later propagation job might
+     * undo that by writing the correct etag to the database instead. This filter
+     * will prevent this write and instead guarantee the _invalid_ etag stays in
+     * place.
+     *
+     * The list is cleared on close() (end of sync run) and explicitly with
+     * clearEtagStorageFilter() (start of sync run).
+     *
+     * The contained paths have a trailing /.
      */
-    QList<QByteArray> _avoidReadFromDbOnNextSyncFilter;
+    QList<QByteArray> _etagStorageFilter;
 
     /** The journal mode to use for the db.
      *
