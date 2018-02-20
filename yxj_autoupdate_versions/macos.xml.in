@@ -1,14 +1,7 @@
-<?xml version="1.0" encoding="utf-8"?>
-<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" xmlns:dc="http://purl.org/dc/elements/1.1/">
-	<channel>
-		<title>Download Channel</title>
-		<description>Most recent changes with links to updates.</description>
-		<language>en</language>
-		<item>
-			<title>VaultDrop Client VALUT_DROP_VERSION (build 8836)</title>
-			<pubDate>Tue, 02 Jan 18 00:00:00 +0000</pubDate>
-			<enclosure url="https://s3.amazonaws.com/vaultdrop-client/VaultDrop-VALUT_DROP_VERSION-git.pkg.tbz" sparkle:version="2.4.0.8836" type="application/octet-stream" sparkle:dsaSignature="MC0CFQDctTzJUMAMqpWUnQugc8nJYMOoVgIUYDfnQrUU006TRiZWhMgq644RINM="/>
-			<sparkle:minimumSystemVersion>10.10.0</sparkle:minimumSystemVersion>
-		</item>
-	</channel>
-</rss> 
+<owncloudclient>
+	<version>VALUT_DROP_VERSION</version>
+	<versionstring>VaultDrop Client VALUT_DROP_VERSION</versionstring>
+	<web>https://www.vaultdrop.com/</web>
+	<downloadurl>https://s3.amazonaws.com/vaultdrop-client/VaultDrop-VALUT_DROP_VERSION-git.pkg</downloadurl>
+</owncloudclient>
+
