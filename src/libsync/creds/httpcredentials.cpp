@@ -339,9 +339,11 @@ void HttpCredentials::slotReadJobDone(QKeychain::Job *incomingJob)
         return;
     }
 
+#ifdef VAULTDROP_OAUTH
+    bool isOauth = true;
+#else
     bool isOauth = _account->credentialSetting(QLatin1String(isOAuthC)).toBool();
-
-    qCWarning(lcHttpCredentials) << "Finished Read Secure String - slotReadJobDone - isOauth :: " << isOath;
+#endif
 
     if (isOauth) {
         _refreshToken = job->textData();
@@ -391,10 +393,8 @@ bool HttpCredentials::refreshAccessToken2()
         return false;
 
 #ifdef VAULTDROP_OAUTH
-        qCWarning(lcHttpCredentials) << "Inspection point:2";
     QUrl requestToken = Utility::concatUrlPath(_account->url(), QLatin1String("/login/authtkt"));
 #else
-        qCWarning(lcHttpCredentials) << "Inspection point:3";
     QUrl requestToken = Utility::concatUrlPath(_account->url(), QLatin1String("/index.php/apps/oauth2/api/v1/token"));
 #endif
     QNetworkRequest req;
@@ -402,7 +402,6 @@ bool HttpCredentials::refreshAccessToken2()
 
     auto clientId = Theme::instance()->oauthClientId();
     auto clientSecret = Theme::instance()->oauthClientSecret();
-        qCWarning(lcHttpCredentials) << "Inspection point:4 " << clientId << " and " << clientSecret;
 
     QString basicAuth = QString("%1:%2").arg(clientId, clientSecret);
 

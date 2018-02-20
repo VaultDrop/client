@@ -99,10 +99,15 @@ QString Updater::getSystemInfo()
 // To test, cmake with -DAPPLICATION_UPDATE_URL="http://127.0.0.1:8080/test.rss"
 Updater *Updater::create()
 {
+#define VAULTDROP
+#ifdef VAULTDROP
+    QUrl updateBaseUrl = QUrl(QLatin1String(APPLICATION_UPDATE_URL));
+#else
     QUrl updateBaseUrl(QString::fromLocal8Bit(qgetenv("OCC_UPDATE_URL")));
     if (updateBaseUrl.isEmpty()) {
         updateBaseUrl = QUrl(QLatin1String(APPLICATION_UPDATE_URL));
     }
+#endif
     if (!updateBaseUrl.isValid() || updateBaseUrl.host() == ".") {
         qCWarning(lcUpdater) << "Not a valid updater URL, will not do update check";
         return 0;
@@ -127,12 +132,11 @@ Updater *Updater::create()
         } else if (Utility::isMac()) {
 			
 #if defined(Q_OS_MAC) && defined(HAVE_SPARKLE)
-            platform = QLatin1String("macos-sparkle);
+            platform = QLatin1String("macos-sparkle");
 #else
             platform = QLatin1String("macos");
 #endif
 		}
-
         updateBaseUrl.setPath(updateBaseUrl.path()+platform+".xml");
     }
 #endif
