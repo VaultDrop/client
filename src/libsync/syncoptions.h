@@ -43,10 +43,16 @@ struct SyncOptions
      * starting value and is then gradually adjusted within the
      * minChunkSize / maxChunkSize bounds.
      */
+//#define VAULT_DROP_TEST_CHUNKS
+#ifdef VAULT_DROP_TEST_CHUNKS
+    quint64 _initialChunkSize = 10 * 1000 ; // 10MB
+    quint64 _minChunkSize = 1 * 1000; // 1MB
+#else
     quint64 _initialChunkSize = 10 * 1000 * 1000; // 10MB
 
     /** The minimum chunk size in bytes for chunked uploads */
     quint64 _minChunkSize = 1 * 1000 * 1000; // 1MB
+#endif
 
     /** The maximum chunk size in bytes for chunked uploads */
     quint64 _maxChunkSize = 100 * 1000 * 1000; // 100MB
