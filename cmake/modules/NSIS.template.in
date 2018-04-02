@@ -466,6 +466,16 @@ Section "${APPLICATION_NAME}" SEC_APPLICATION
    ;CSync configs
    File "${SOURCE_PATH}/sync-exclude.lst"
 
+
+; Vault Drop, add sendto link.
+    File "${BUILD_PATH}\bin\VaultDropSendTo.exe"
+
+    ReadRegStr $0 HKCU "Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders" "SendTo"
+
+    SetShellVarContext all
+    CreateShortCut "$0\VaultDrop.lnk" "$INSTDIR\VaultDropSendTo.exe"
+    SetShellVarContext current
+
 SectionEnd
 
 !ifdef OPTION_SECTION_SC_SHELL_EXT
