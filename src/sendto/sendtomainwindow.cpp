@@ -9,7 +9,6 @@
 #include <QMessageBox>
 #include <QDebug>
 #include <QMessageBox>
-#include <QStringLiteral>
 
 SendToMainWindow::SendToMainWindow(int argc, char **argv, const QString &vaultDir) :
     argc(argc), argv(argv),
