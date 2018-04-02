@@ -6,9 +6,21 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>403</width>
-    <height>388</height>
+    <width>400</width>
+    <height>377</height>
    </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>400</width>
+    <height>377</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>400</width>
+    <height>377</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>SendToMainWindow</string>
@@ -17,9 +29,9 @@
    <widget class="QLabel" name="sendToLabel">
     <property name="geometry">
      <rect>
-      <x>30</x>
+      <x>20</x>
       <y>41</y>
-      <width>161</width>
+      <width>160</width>
       <height>20</height>
      </rect>
     </property>
@@ -30,9 +42,9 @@
    <widget class="QPushButton" name="pushButtonSendTo">
     <property name="geometry">
      <rect>
-      <x>320</x>
+      <x>310</x>
       <y>310</y>
-      <width>70</width>
+      <width>69</width>
       <height>23</height>
      </rect>
     </property>
@@ -46,9 +58,9 @@
    <widget class="QPushButton" name="pushButtonCancel">
     <property name="geometry">
      <rect>
-      <x>240</x>
+      <x>230</x>
       <y>310</y>
-      <width>75</width>
+      <width>74</width>
       <height>23</height>
      </rect>
     </property>
@@ -59,9 +71,9 @@
    <widget class="QTreeView" name="folderTree">
     <property name="geometry">
      <rect>
-      <x>25</x>
+      <x>15</x>
       <y>61</y>
-      <width>371</width>
+      <width>370</width>
       <height>231</height>
      </rect>
     </property>
@@ -69,9 +81,9 @@
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>30</x>
+      <x>20</x>
       <y>0</y>
-      <width>121</width>
+      <width>120</width>
       <height>31</height>
      </rect>
     </property>
@@ -92,9 +104,9 @@
    <widget class="QLabel" name="itemLabel">
     <property name="geometry">
      <rect>
-      <x>120</x>
+      <x>110</x>
       <y>0</y>
-      <width>281</width>
+      <width>280</width>
       <height>51</height>
      </rect>
     </property>
@@ -125,7 +137,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>403</width>
+     <width>400</width>
      <height>21</height>
     </rect>
    </property>
@@ -140,11 +152,6 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-  </widget>
-  <widget class="QStatusBar" name="statusBar">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
   </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
