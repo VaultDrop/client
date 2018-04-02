@@ -69,7 +69,7 @@ QUrlQuery Updater::getQueryParams()
     bool isBeta = (suffix.startsWith("nightly")
             || suffix.startsWith("daily")            || suffix.startsWith("alpha")
             || suffix.startsWith("rc")
-            || suffix.startsWith("beta"));
+            || suffix.startsWith("beta") || suffix.startsWith("-beta"));
     if (isBeta){
         query.addQueryItem(QLatin1String("channel"), "beta");
         // FIXME: Provide a checkbox in UI to enable regular versions to switch
@@ -127,13 +127,20 @@ Updater *Updater::create()
         } else if (Utility::isMac()) {
 			
 #if defined(Q_OS_MAC) && defined(HAVE_SPARKLE)
-            platform = QLatin1String("macos-sparkle);
+            platform = QLatin1String("macos-sparkle");
 #else
             platform = QLatin1String("macos");
 #endif
 		}
-
-        updateBaseUrl.setPath(updateBaseUrl.path()+platform+".xml");
+    QString suffix = QString::fromLatin1(MIRALL_STRINGIFY(MIRALL_VERSION_SUFFIX));
+    bool isBeta = (suffix.startsWith("nightly")
+            || suffix.startsWith("daily")            
+			|| suffix.startsWith("alpha")
+            || suffix.startsWith("rc")
+            || suffix.startsWith("beta") || suffix.startsWith("-beta"));
+			
+	updateBaseUrl.setPath(updateBaseUrl.path()+platform+(isBeta?"-beta":"-notbeta")+suffix+".xml");
+		
     }
 #endif
 

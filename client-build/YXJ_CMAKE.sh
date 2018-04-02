@@ -9,10 +9,16 @@ make install
 admin/osx/create_mac.sh ../install . "Developer ID Installer: Vault Drop, LLC (9968GEYSTF)"
 
 VDVER=$(grep MIRALL_VERSION_FULL version.h | sed -e 's/#define MIRALL_VERSION_FULL //' | sed -e 's/[" ]//g')
-sed -e "s/VALUT_DROP_VERSION/${VDVER}/g" '../yxj_autoupdate_versions/macos.xml.in' > '../yxj_autoupdate_versions/macos.xml'
-sed -e "s/VALUT_DROP_VERSION/${VDVER}/g" '../yxj_autoupdate_versions/macos-sparkle.xml.in' > '../yxj_autoupdate_versions/macos-sparkle.xml'
-cp -v ../install/VaultDrop-${VDVER}-git.pkg ../install/VaultDrop-${VDVER}-git.pkg.tbz ../yxj_autoupdate_versions/
-cp -v ../install/VaultDrop-${VDVER}-git.pkg ../yxj_autoupdate_versions/VaultDrop.pkg
+VDVERSUF=$(grep MIRALL_VERSION_SUFFIX version.h | sed -e 's/#define MIRALL_VERSION_SUFFIX //' | sed -e 's/[" ]//g')
+
+
+
+sed -e "s/VALUT_DROP_VERSION_SUFFIX/${VDVERSUF}/g" -e "s/VALUT_DROP_VERSION/${VDVER}/g" '../yxj_autoupdate_versions/macos.xml.in' > "../yxj_autoupdate_versions/macos${VDVERSUF}.xml"
+sed -e "s/VALUT_DROP_VERSION_SUFFIX/${VDVERSUF}/g" -e "s/VALUT_DROP_VERSION/${VDVER}/g" '../yxj_autoupdate_versions/macos-sparkle.xml.in' > "../yxj_autoupdate_versions/macos-sparkle${VDVERSUF}.xml"
+
+cp -v "../install/VaultDrop-${VDVER}${VDVERSUF}.pkg"     "../yxj_autoupdate_versions/VaultDrop-${VDVER}${VDVERSUF}.pkg"
+cp -v "../install/VaultDrop-${VDVER}${VDVERSUF}.pkg.tbz" "../yxj_autoupdate_versions/VaultDrop-${VDVER}${VDVERSUF}.pkg.tbz"
+cp -v "../install/VaultDrop-${VDVER}${VDVERSUF}.pkg"     "../yxj_autoupdate_versions/VaultDrop${VDVERSUF}.pkg"
 
 
 

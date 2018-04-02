@@ -2,10 +2,15 @@
 <head><title>VaultDrop Download Page</title>
 </head>
 <body>
-<h2>VaultDrop Download Links</h2>
+<h2>VaultDrop Download Links - Production Version</h2>
 <ol>
-	<li>Windows:   <a href="https://s3.amazonaws.com/vaultdrop-client/VaultDrop-VALUT_DROP_VERSION-cs-setup.exe">VaultDrop-VALUT_DROP_VERSION</a></li>
-	<li>Apple Mac: <a href="https://s3.amazonaws.com/vaultdrop-client/VaultDrop-VALUT_DROP_VERSION-git.pkg">VaultDrop-VALUT_DROP_VERSION</a></li>
+	<li>Windows:   <a href="https://s3.amazonaws.com/vaultdrop-client/VaultDrop-cs-setup.exe">VaultDrop Production Release</a></li>
+	<li>Apple Mac: <a href="https://s3.amazonaws.com/vaultdrop-client/VaultDrop.pkg">VaultDrop Production Release</a></li>
+</ol>
+<h2>VaultDrop Download Links - Beta Version</h2>
+<ol>
+	<li>Windows:   <a href="https://s3.amazonaws.com/vaultdrop-client/VaultDrop-beta-cs-setup.exe">VaultDrop Beta Release</a></li>
+	<li>Apple Mac: <a href="https://s3.amazonaws.com/vaultdrop-client/VaultDrop-beta.pkg">VaultDrop Beta Release</a></li>
 </ol>
 </body>
 </html>   
