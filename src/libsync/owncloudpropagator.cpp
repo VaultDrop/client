@@ -392,8 +392,10 @@ PropagateItemJob *OwncloudPropagator::createJob(const SyncFileItemPtr &item)
             if (item->_size > syncOptions()._initialChunkSize && account()->capabilities().chunkingNg()) {
                 // Item is above _initialChunkSize, thus will be classified as to be chunked
                 job = new PropagateUploadFileNG(this, item);
+                // qCInfo(lcPropagator) << "ChunkNG ";
             } else {
                 job = new PropagateUploadFileV1(this, item);
+                // qCInfo(lcPropagator) << "ChunkOldG " << (item->_size > syncOptions()._initialChunkSize) << " -- " << syncOptions()._initialChunkSize;
             }
             job->setDeleteExisting(deleteExisting);
             return job;

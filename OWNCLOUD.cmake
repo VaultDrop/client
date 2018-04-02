@@ -1,7 +1,7 @@
 set( APPLICATION_NAME       "VaultDrop" )
 set( APPLICATION_SHORTNAME  "VaultDrop" )
 set( APPLICATION_EXECUTABLE "VaultDrop" )
-set( APPLICATION_DOMAIN     "www.VaultDrop.com" )
+set( APPLICATION_DOMAIN     "www.vaultdrop.com" )
 set( APPLICATION_VENDOR     "VaultDrop" )
 set( APPLICATION_UPDATE_URL "https://s3.amazonaws.com/vaultdrop-client/" CACHE string "URL for updater" )
 set( APPLICATION_ICON_NAME  "owncloud" )

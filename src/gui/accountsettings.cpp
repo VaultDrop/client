@@ -614,7 +614,12 @@ void AccountSettings::slotUpdateQuota(qint64 total, qint64 used)
 
         /* -1 means not computed; -2 means unknown; -3 means unlimited  (#3940)*/
         if (total == 0 || total == -1) {
+#define VAULTDROP
+#ifdef VAULTDROP
+            ui->quotaInfoLabel->setText(tr(""));
+#else
             ui->quotaInfoLabel->setText(tr("Currently there is no storage usage information available."));
+#endif
         } else {
             QString usedStr = Utility::octetsToString(used);
             ui->quotaInfoLabel->setText(tr("%1 in use").arg(usedStr));

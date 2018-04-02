@@ -134,15 +134,16 @@ static int _csync_detect_update(CSYNC *ctx, std::unique_ptr<csync_file_stat_t> f
           qCDebug(lcUpdate, "file excluded because it is a hidden file: %s", fs->path.constData());
           excluded = CSYNC_FILE_EXCLUDE_HIDDEN;
       }
-#define VAULTDROP
-#define VAULTDROP_MAX_FILE_SIZE (20*(1024*1024))
-#ifdef VAULTDROP
-      if (fs->size > VAULTDROP_MAX_FILE_SIZE) {
-          qCDebug(lcUpdate, "file excluded because it is a above max file size: %s (max file size is (%d MB)", fs->path.constData(), VAULTDROP_MAX_FILE_SIZE/1024/1024);
+// This is no longer required, as vault drop now includes support for large files.
+//#define VAULTDROP
+//#define VAULTDROP_MAX_FILE_SIZE (20*(1024*1024))
+//#ifdef VAULTDROP
+//      if (fs->size > VAULTDROP_MAX_FILE_SIZE) {
+//          qCDebug(lcUpdate, "file excluded because it is a above max file size: %s (max file size is (%d MB)", fs->path.constData(), VAULTDROP_MAX_FILE_SIZE/1024/1024);
 
-          excluded = CSYNC_FILE_EXCLUDE_TOO_LARGE;
-      }
-#endif
+//          excluded = CSYNC_FILE_EXCLUDE_TOO_LARGE;
+//      }
+//#endif
 
 
   } else {
