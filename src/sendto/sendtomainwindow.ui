@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>403</width>
-    <height>403</height>
+    <height>388</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -30,14 +30,14 @@
    <widget class="QPushButton" name="pushButtonSendTo">
     <property name="geometry">
      <rect>
-      <x>20</x>
+      <x>320</x>
       <y>310</y>
       <width>70</width>
       <height>23</height>
      </rect>
     </property>
     <property name="text">
-     <string>Move</string>
+     <string>Send To</string>
     </property>
     <property name="default">
      <bool>true</bool>
@@ -46,7 +46,7 @@
    <widget class="QPushButton" name="pushButtonCancel">
     <property name="geometry">
      <rect>
-      <x>100</x>
+      <x>240</x>
       <y>310</y>
       <width>75</width>
       <height>23</height>
