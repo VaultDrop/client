@@ -23,13 +23,12 @@ private slots:
     void cancelPressed();
     void mySelectionChanged(const QItemSelection &,const QItemSelection &);
 private:
-    QString selectedFile;
-    QString vaultDir;
-    Ui::SendToMainWindow *ui;
-    QStringListModel *model;
     int argc;
     char **argv;
-
+    QString vaultDir;
+    QString selectedFile;
+    Ui::SendToMainWindow *ui;
+    QStringListModel *model;
 };
 
 #endif // SENDTOMAINWINDOW_H

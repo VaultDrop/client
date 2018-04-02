@@ -13,8 +13,8 @@
 
 SendToMainWindow::SendToMainWindow(int argc, char **argv, const QString &vaultDir) :
     argc(argc), argv(argv),
-    QMainWindow(0),
     vaultDir(vaultDir + (vaultDir.endsWith("/") || vaultDir.endsWith("\\") ? "" : "/")),
+    QMainWindow(0),
     ui(new Ui::SendToMainWindow)
 {
     ui->setupUi(this);
